@@ -1,8 +1,22 @@
 import React from 'react';
 import { Users, BookOpen, FileText, BarChart3, Settings, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import '../styles/adminDashboard.css';
 
 function AdminDashboard() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/signin');
+    } catch (err) {
+      console.error('Logout failed:', err);
+    }
+  };
+
   const stats = [
     { icon: Users, label: 'Total Students', value: '1,234', color: 'orange' },
     { icon: BookOpen, label: 'Active Courses', value: '28', color: 'orange' },
@@ -16,13 +30,13 @@ function AdminDashboard() {
       <div className="admin-header">
         <div className="admin-header-content">
           <h1 className="admin-title">Admin Dashboard</h1>
-          <p className="admin-subtitle">Welcome back, Administrator</p>
+          <p className="admin-subtitle">Welcome back, {user?.name || 'Administrator'}</p>
         </div>
         <div className="admin-actions">
           <button className="admin-btn-icon">
             <Settings size={20} />
           </button>
-          <button className="admin-btn-logout">
+          <button className="admin-btn-logout" onClick={handleLogout}>
             <LogOut size={20} />
             Logout
           </button>

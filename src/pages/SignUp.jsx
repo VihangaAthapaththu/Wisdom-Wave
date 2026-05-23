@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import '../styles/signup.css';
 
 function SignUp() {
@@ -10,6 +11,12 @@ function SignUp() {
     confirmPassword: '',
     acceptTerms: false
   });
+  const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { register } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -17,11 +24,50 @@ function SignUp() {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
+    // Clear errors on input change
+    if (error) setError('');
+    if (fieldErrors.length) setFieldErrors([]);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Sign Up:', formData);
+    setError('');
+    setFieldErrors([]);
+
+    // Client-side password match validation
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+
+    if (!formData.acceptTerms) {
+      setError('Please accept the Terms of Service.');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      await register({
+        name: formData.fullName,
+        email: formData.email,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+      });
+
+      // Redirect to student dashboard after successful registration
+      navigate('/student-dashboard');
+    } catch (err) {
+      const response = err.response?.data;
+
+      if (response?.errors) {
+        setFieldErrors(response.errors);
+      } else {
+        setError(response?.message || 'Registration failed. Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -59,6 +105,22 @@ function SignUp() {
           <h2 className="signup-form-title">Sign Up</h2>
           <p className="signup-form-subtitle">Create your Wisdom Wave account in minutes</p>
 
+          {/* Error Messages */}
+          {error && (
+            <div className="signup-error-alert">
+              {error}
+            </div>
+          )}
+          {fieldErrors.length > 0 && (
+            <div className="signup-error-alert">
+              <ul style={{ margin: 0, paddingLeft: '18px' }}>
+                {fieldErrors.map((fe, i) => (
+                  <li key={i}>{fe.message}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           <form className="signup-form" onSubmit={handleSubmit}>
             <div className="signup-form-group">
               <label htmlFor="fullName">Full Name</label>
@@ -70,6 +132,7 @@ function SignUp() {
                 onChange={handleChange}
                 placeholder="Your full name"
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -83,6 +146,7 @@ function SignUp() {
                 onChange={handleChange}
                 placeholder="you@example.com"
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -96,6 +160,7 @@ function SignUp() {
                 onChange={handleChange}
                 placeholder="Create a password"
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -109,6 +174,7 @@ function SignUp() {
                 onChange={handleChange}
                 placeholder="Re-enter your password"
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -120,14 +186,15 @@ function SignUp() {
                 checked={formData.acceptTerms}
                 onChange={handleChange}
                 required
+                disabled={isLoading}
               />
               <label htmlFor="acceptTerms">
                 I agree to the Terms of Service and Privacy Policy
               </label>
             </div>
 
-            <button type="submit" className="signup-btn">
-              Create Account
+            <button type="submit" className="signup-btn" disabled={isLoading}>
+              {isLoading ? 'Creating Account...' : 'Create Account'}
             </button>
           </form>
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import '../styles/signin.css';
 
 function SignIn() {
@@ -8,6 +9,12 @@ function SignIn() {
     password: '',
     rememberMe: false
   });
+  const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -15,11 +22,37 @@ function SignIn() {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
+    // Clear errors on input change
+    if (error) setError('');
+    if (fieldErrors.length) setFieldErrors([]);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Sign In:', formData);
+    setError('');
+    setFieldErrors([]);
+    setIsLoading(true);
+
+    try {
+      const user = await login(formData.email, formData.password);
+
+      // Redirect based on role
+      if (user.role === 'ADMIN') {
+        navigate('/dashboard');
+      } else {
+        navigate('/student-dashboard');
+      }
+    } catch (err) {
+      const response = err.response?.data;
+
+      if (response?.errors) {
+        setFieldErrors(response.errors);
+      } else {
+        setError(response?.message || 'Login failed. Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -58,6 +91,22 @@ function SignIn() {
           <h2 className="signin-form-title">Sign In</h2>
           <p className="signin-form-subtitle">Enter your credentials to access your account</p>
 
+          {/* Error Messages */}
+          {error && (
+            <div className="signin-error-alert">
+              {error}
+            </div>
+          )}
+          {fieldErrors.length > 0 && (
+            <div className="signin-error-alert">
+              <ul style={{ margin: 0, paddingLeft: '18px' }}>
+                {fieldErrors.map((fe, i) => (
+                  <li key={i}>{fe.message}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           <form className="signin-form" onSubmit={handleSubmit}>
             <div className="signin-form-group">
               <label htmlFor="email">Email Address</label>
@@ -69,6 +118,7 @@ function SignIn() {
                 onChange={handleChange}
                 placeholder="you@example.com"
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -82,6 +132,7 @@ function SignIn() {
                 onChange={handleChange}
                 placeholder="••••••••"
                 required
+                disabled={isLoading}
               />
             </div>
 
@@ -92,6 +143,7 @@ function SignIn() {
                 name="rememberMe"
                 checked={formData.rememberMe}
                 onChange={handleChange}
+                disabled={isLoading}
               />
               <label htmlFor="remember">Remember me for 30 days</label>
             </div>
@@ -100,8 +152,8 @@ function SignIn() {
               <a href="#forgot">Forgot your password?</a>
             </div>
 
-            <button type="submit" className="signin-btn">
-              Sign In
+            <button type="submit" className="signin-btn" disabled={isLoading}>
+              {isLoading ? 'Signing In...' : 'Sign In'}
             </button>
           </form>
 

@@ -1,5 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/Common/ProtectedRoute';
 import LandingPage from './pages/LandingPage';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
@@ -34,31 +36,43 @@ function ClientLayout() {
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route element={<ClientLayout />}>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/signin" element={<SignIn />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/student-dashboard" element={<StudentDashboard />} />
-          <Route path="/courses" element={<CourseList />} />
-          <Route path="/courses/:id" element={<CoursePage />} />
-          <Route path="/lessons/:id" element={<LessonPage />} />
-          <Route path="/blog" element={<BlogStudent />} />
-          <Route path="/messages" element={<MessagePortal />} />
-          <Route path="/notifications" element={<Notification />} />
-        </Route>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          {/* Public routes with client navbar */}
+          <Route element={<ClientLayout />}>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/courses" element={<CourseList />} />
+            <Route path="/courses/:id" element={<CoursePage />} />
+            <Route path="/blog" element={<BlogStudent />} />
+          </Route>
 
-        <Route path="/dashboard" element={<AdminDashboard />} />
-        <Route path="/dashboard/courses" element={<CourseManagement />} />
-        <Route path="/dashboard/courses/:id/materials" element={<CourseMaterialManagement />} />
-        <Route path="/dashboard/students" element={<StudentManagement />} />
-        <Route path="/dashboard/students/enrollments" element={<StudentEnrollments />} />
-        <Route path="/dashboard/blog" element={<BlogManagement />} />
-        <Route path="/dashboard/reports" element={<ReportManagement />} />
-      </Routes>
-    </Router>
+          {/* Protected student routes with client navbar */}
+          <Route element={<ProtectedRoute roles={['STUDENT', 'ADMIN']} />}>
+            <Route element={<ClientLayout />}>
+              <Route path="/student-dashboard" element={<StudentDashboard />} />
+              <Route path="/lessons/:id" element={<LessonPage />} />
+              <Route path="/messages" element={<MessagePortal />} />
+              <Route path="/notifications" element={<Notification />} />
+            </Route>
+          </Route>
+
+          {/* Protected admin routes */}
+          <Route element={<ProtectedRoute roles={['ADMIN']} />}>
+            <Route path="/dashboard" element={<AdminDashboard />} />
+            <Route path="/dashboard/courses" element={<CourseManagement />} />
+            <Route path="/dashboard/courses/:id/materials" element={<CourseMaterialManagement />} />
+            <Route path="/dashboard/students" element={<StudentManagement />} />
+            <Route path="/dashboard/students/enrollments" element={<StudentEnrollments />} />
+            <Route path="/dashboard/blog" element={<BlogManagement />} />
+            <Route path="/dashboard/reports" element={<ReportManagement />} />
+          </Route>
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 
