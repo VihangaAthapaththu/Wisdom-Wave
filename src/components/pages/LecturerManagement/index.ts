@@ -1,0 +1,1 @@
+export { LecturerManagement } from './LecturerManagement';

@@ -1,26 +1,28 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import ProtectedRoute from './components/Common/ProtectedRoute';
-import LandingPage from './pages/LandingPage';
-import SignIn from './pages/SignIn';
-import SignUp from './pages/SignUp';
-import Contact from './pages/Contact';
-import AdminDashboard from './pages/AdminDashboard';
-import StudentDashboard from './pages/StudentDashboard';
-import CourseManagement from './pages/CourseManagement';
-import CourseMaterialManagement from './pages/CourseMaterialManagement';
-import CourseList from './pages/CourseList';
-import CoursePage from './pages/CoursePage';
-import LessonPage from './pages/LessonPage';
-import BlogManagement from './pages/BlogManagement';
-import BlogStudent from './pages/BlogStudent';
-import StudentManagement from './pages/StudentManagement';
-import StudentEnrollments from './pages/StudentEnrollments';
-import MessagePortal from './pages/MessagePortal';
-import ReportManagement from './pages/ReportManagement';
-import Notification from './pages/Notification';
-import ClientNavbar from './components/Common/ClientNavbar';
+import { ProtectedRoute } from './components/atoms';
+import { LandingPage } from './components/pages/LandingPage';
+import { SignIn } from './components/pages/SignIn';
+import { SignUp } from './components/pages/SignUp';
+import { Contact } from './components/pages/Contact';
+import { AdminDashboard } from './components/pages/AdminDashboard';
+import { StudentDashboard } from './components/pages/StudentDashboard';
+import { CourseManagement } from './components/pages/CourseManagement';
+import { CourseMaterialManagement } from './components/pages/CourseMaterialManagement';
+import { CourseList } from './components/pages/CourseList';
+import { CoursePage } from './components/pages/CoursePage';
+import { LessonPage } from './components/pages/LessonPage';
+import { BlogManagement } from './components/pages/BlogManagement';
+import { BlogStudent } from './components/pages/BlogStudent';
+import { StudentManagement } from './components/pages/StudentManagement';
+import { StudentEnrollments } from './components/pages/StudentEnrollments';
+import { MessagePortal } from './components/pages/MessagePortal';
+import { ReportManagement } from './components/pages/ReportManagement';
+import { Notification } from './components/pages/Notification';
+import { LecturerDashboard } from './components/pages/LecturerDashboard';
+import { LecturerManagement } from './components/pages/LecturerManagement';
+import { ClientNavbar } from './components/organisms';
 import './App.css';
 
 function ClientLayout() {
@@ -67,8 +69,17 @@ function App() {
             <Route path="/dashboard/courses/:id/materials" element={<CourseMaterialManagement />} />
             <Route path="/dashboard/students" element={<StudentManagement />} />
             <Route path="/dashboard/students/enrollments" element={<StudentEnrollments />} />
+            <Route path="/dashboard/lecturers" element={<LecturerManagement />} />
             <Route path="/dashboard/blog" element={<BlogManagement />} />
             <Route path="/dashboard/reports" element={<ReportManagement />} />
+          </Route>
+
+          {/* Protected Lecturer routes */}
+          <Route element={<ProtectedRoute roles={['LECTURER']} />}>
+            <Route path="/lecturer-dashboard" element={<LecturerDashboard />} />
+            <Route path="/lecturer-dashboard/courses" element={<CourseManagement />} />
+            <Route path="/lecturer-dashboard/courses/:id/materials" element={<CourseMaterialManagement />} />
+            <Route path="/lecturer-dashboard/blog" element={<BlogManagement />} />
           </Route>
         </Routes>
       </Router>
