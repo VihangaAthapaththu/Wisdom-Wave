@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components';
 import { Plus } from 'lucide-react';
 
 export function PageHeader({ title, buttonText, onButtonClick, icon: Icon = Plus }) {

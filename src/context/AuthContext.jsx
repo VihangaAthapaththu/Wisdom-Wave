@@ -1,63 +1,64 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import authService from "../services/authService";
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useGetMe, useLogin, useRegister, useLogout } from '@/hooks/auth/useAuth';
 
 const AuthContext = createContext(null);
 
 /**
  * Provides authentication state and actions to the entire app.
- * On mount, checks for an existing session via the httpOnly cookie.
+ * Uses React Query hooks for server interactions.
  */
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Check for existing session on mount
-  useEffect(() => {
-    checkAuth();
-  }, []);
+  const getMeQuery = useGetMe({ enabled: true });
+  const loginMutation = useLogin();
+  const registerMutation = useRegister();
+  const logoutMutation = useLogout();
 
-  /**
-   * Verify if a valid session exists (httpOnly cookie is sent automatically).
-   */
+  // Sync query result into local state
+  useEffect(() => {
+    const data = getMeQuery.data;
+    if (data) {
+      const u = data?.data?.user || data?.user || data;
+      setUser(u || null);
+    } else {
+      setUser(null);
+    }
+    setLoading(getMeQuery.isFetching || getMeQuery.isLoading);
+  }, [getMeQuery.data, getMeQuery.isFetching, getMeQuery.isLoading]);
+
   const checkAuth = async () => {
+    setLoading(true);
     try {
-      const response = await authService.getMe();
-      setUser(response.data.user);
+      const res = await getMeQuery.refetch();
+      const u = res?.data?.data?.user || res?.data?.user || res?.data || null;
+      setUser(u);
+      return u;
     } catch {
       setUser(null);
+      return null;
     } finally {
       setLoading(false);
     }
   };
 
-  /**
-   * Login with email and password.
-   * @param {string} email
-   * @param {string} password
-   * @returns {Promise<Object>} User object
-   */
   const login = async (email, password) => {
-    const response = await authService.login(email, password);
-    setUser(response.data.user);
-    return response.data.user;
+    const resp = await loginMutation.mutateAsync({ email, password });
+    const u = resp?.data?.user || resp?.user || resp;
+    setUser(u || null);
+    return u;
   };
 
-  /**
-   * Register a new account.
-   * @param {Object} data - { name, email, password, confirmPassword }
-   * @returns {Promise<Object>} User object
-   */
   const register = async (data) => {
-    const response = await authService.register(data);
-    setUser(response.data.user);
-    return response.data.user;
+    const resp = await registerMutation.mutateAsync(data);
+    const u = resp?.data?.user || resp?.user || resp;
+    setUser(u || null);
+    return u;
   };
 
-  /**
-   * Logout — clears server-side cookie and local state.
-   */
   const logout = async () => {
-    await authService.logout();
+    await logoutMutation.mutateAsync();
     setUser(null);
   };
 
@@ -73,16 +74,8 @@ export function AuthProvider({ children }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-/**
- * Hook to access auth context.
- * Must be used within an AuthProvider.
- */
 export function useAuth() {
   const context = useContext(AuthContext);
-
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 }

@@ -1,21 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { UserPlus, GraduationCap, X, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Button, Card, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components';
 import { PageHeader } from '@/components/molecules';
-import lecturerService from '@/services/lecturerService';
+import { useLecturers, useRegisterLecturer, useDeactivateLecturer } from '@/hooks/lecturers/useLecturers';
 
 export function LecturerManagement() {
-  const [lecturers, setLecturers] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: lecturers = [], isLoading } = useLecturers();
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -28,21 +18,8 @@ export function LecturerManagement() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
 
-  useEffect(() => {
-    fetchLecturers();
-  }, []);
-
-  const fetchLecturers = async () => {
-    try {
-      setIsLoading(true);
-      const response = await lecturerService.getAllLecturers();
-      setLecturers(response.data.lecturers);
-    } catch (err) {
-      console.error('Failed to fetch lecturers:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const registerLecturer = useRegisterLecturer();
+  const deactivateLecturer = useDeactivateLecturer();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -58,11 +35,10 @@ export function LecturerManagement() {
     setIsSubmitting(true);
 
     try {
-      await lecturerService.registerLecturer(formData);
+      const resp = await registerLecturer.mutateAsync(formData);
       setSuccessMsg('Lecturer registered successfully!');
       setFormData({ name: '', email: '', password: '', specialization: '' });
       setShowModal(false);
-      fetchLecturers();
       setTimeout(() => setSuccessMsg(''), 4000);
     } catch (err) {
       const response = err.response?.data;
@@ -79,8 +55,7 @@ export function LecturerManagement() {
   const handleDeactivate = async (lecturerId) => {
     if (!window.confirm('Are you sure you want to deactivate this lecturer?')) return;
     try {
-      await lecturerService.deactivateLecturer(lecturerId);
-      fetchLecturers();
+      await deactivateLecturer.mutateAsync(lecturerId);
     } catch (err) {
       console.error('Failed to deactivate lecturer:', err);
     }

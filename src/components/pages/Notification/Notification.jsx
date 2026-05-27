@@ -1,13 +1,6 @@
 import React from 'react';
 import { Bell, CheckCircle, AlertCircle } from 'lucide-react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components';
 import { PageHeader } from '@/components/molecules';
 
 export function Notification() {

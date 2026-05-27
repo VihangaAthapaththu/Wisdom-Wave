@@ -1,8 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Clock, Users, Code2, Smartphone, Network, BookOpen, Compass, Award, GraduationCap, ArrowRight, Play, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Button, Card } from '@/components';
 
 export function LandingPage() {
   const courses = [

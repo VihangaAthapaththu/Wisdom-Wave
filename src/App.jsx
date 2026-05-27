@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/atoms';
 import { LandingPage } from './components/pages/LandingPage';
@@ -24,6 +25,8 @@ import { LecturerDashboard } from './components/pages/LecturerDashboard';
 import { LecturerManagement } from './components/pages/LecturerManagement';
 import { ClientNavbar } from './components/organisms';
 import './App.css';
+import { Toaster } from 'sonner';
+import 'sonner/dist/styles.css';
 
 function ClientLayout() {
   return (
@@ -37,9 +40,11 @@ function ClientLayout() {
 }
 
 function App() {
+  const queryClient = new QueryClient();
   return (
-    <AuthProvider>
-      <Router>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <Router>
         <Routes>
           {/* Public routes with client navbar */}
           <Route element={<ClientLayout />}>
@@ -82,8 +87,10 @@ function App() {
             <Route path="/lecturer-dashboard/blog" element={<BlogManagement />} />
           </Route>
         </Routes>
-      </Router>
-    </AuthProvider>
+        <Toaster position="bottom-right" />
+        </Router>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 

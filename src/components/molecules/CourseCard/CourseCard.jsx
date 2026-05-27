@@ -1,7 +1,6 @@
 import React from 'react';
 import { Clock, Users } from 'lucide-react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, Button } from '@/components';
 
 export function CourseCard({ course }) {
   const IconComp = course.icon;

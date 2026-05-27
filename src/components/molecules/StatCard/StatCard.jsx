@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card } from '@/components/ui/card';
+import { Card } from '@/components';
 
 export function StatCard({ icon: Icon, label, value }) {
   return (

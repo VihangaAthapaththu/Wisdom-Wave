@@ -7,7 +7,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from '@/components'
 import { PageHeader } from '@/components/molecules';
 
 export function StudentEnrollments() {

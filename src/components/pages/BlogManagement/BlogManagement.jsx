@@ -1,14 +1,6 @@
 import React from 'react';
 import { FileText } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { Button, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components';
 import { PageHeader } from '@/components/molecules';
 
 export function BlogManagement() {

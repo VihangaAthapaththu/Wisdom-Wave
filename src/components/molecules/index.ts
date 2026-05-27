@@ -5,3 +5,4 @@ export { EnrolledCourseCard } from './EnrolledCourseCard';
 export { ArticleCard } from './ArticleCard';
 export { ContactInfoItem } from './ContactInfoItem';
 export { CourseCard } from './CourseCard';
+export { LecturerCoursesList } from './LecturerCoursesList';

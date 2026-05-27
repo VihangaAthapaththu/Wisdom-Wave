@@ -1,6 +1,5 @@
 import React from 'react';
-import { Card } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
+import { Card, Progress } from '@/components';
 import { BookOpen } from 'lucide-react';
 
 export function EnrolledCourseCard({ course }) {
