@@ -1,7 +1,7 @@
 import React from 'react';
 import { Users, BookOpen, FileText, BarChart3, Settings, LogOut, GraduationCap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from "@/context";
 import { StatCard, MenuCard } from '@/components/molecules';
 
 export function AdminDashboard() {

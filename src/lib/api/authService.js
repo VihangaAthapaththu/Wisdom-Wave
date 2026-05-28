@@ -3,7 +3,7 @@ import api from "./api";
 /**
  * Frontend auth service — wraps API calls to auth endpoints.
  */
-const authService = {
+export const authService = {
   /**
    * Login with email and password.
    * @param {string} email
@@ -44,4 +44,4 @@ const authService = {
   },
 };
 
-export default authService;
+

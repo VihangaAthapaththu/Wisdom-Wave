@@ -3,7 +3,7 @@ import api from "./api";
 /**
  * Frontend lecturer service — wraps API calls to lecturer endpoints.
  */
-const lecturerService = {
+export const lecturerService = {
   /**
    * Register a new lecturer (admin-only).
    * @param {Object} data - { name, email, password, specialization }
@@ -64,4 +64,3 @@ const lecturerService = {
   },
 };
 
-export default lecturerService;

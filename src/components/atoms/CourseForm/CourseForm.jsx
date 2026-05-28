@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components';
-import { useLecturers } from '@/hooks/lecturers/useLecturers';
+import { useLecturers } from '@/hooks';
 
 export function CourseForm({
   initialValues = {},
@@ -194,4 +194,4 @@ export function CourseForm({
   );
 }
 
-export default CourseForm;
+

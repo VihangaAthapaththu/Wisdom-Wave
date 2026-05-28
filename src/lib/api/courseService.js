@@ -1,6 +1,6 @@
 import api from "./api";
 
-const courseService = {
+export const courseService = {
   async getAll() {
     const response = await api.get("/courses");
     return response.data;
@@ -32,4 +32,3 @@ const courseService = {
   },
 };
 
-export default courseService;

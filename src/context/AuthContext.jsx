@@ -1,7 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useGetMe, useLogin, useRegister, useLogout } from '@/hooks/auth/useAuth';
-
-const AuthContext = createContext(null);
+import React, { useState, useEffect } from 'react';
+import { useGetMe, useLogin, useRegister, useLogout } from '@/hooks';
+import { AuthContext } from './authContextValue';
 
 /**
  * Provides authentication state and actions to the entire app.
@@ -72,10 +71,4 @@ export function AuthProvider({ children }) {
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth must be used within an AuthProvider');
-  return context;
 }

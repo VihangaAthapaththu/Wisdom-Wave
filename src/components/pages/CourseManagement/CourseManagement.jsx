@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { BookOpen } from 'lucide-react';
 import { Button, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components';
 import { PageHeader } from '@/components/molecules';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from "@/context";
 import { useCourses, useCreateCourse, useUpdateCourse, useDeleteCourse } from '@/hooks/courses/useCourses';
 import { CourseModal } from '@/components';
 import { toast } from 'sonner';

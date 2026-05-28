@@ -1,1 +1,0 @@
-export { BlogStudent } from './BlogStudent';

@@ -1,1 +1,0 @@
-export { MessagePortal } from './MessagePortal';

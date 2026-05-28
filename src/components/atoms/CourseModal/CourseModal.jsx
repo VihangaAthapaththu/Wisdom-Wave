@@ -1,7 +1,6 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import { Card } from '@/components';
-import { CourseForm } from '@/components';
+import { Card,CourseForm } from '@/components';
 
 export function CourseModal({ open, title = 'Add Course', initialValues = {}, onClose, onSave, isSubmitting }) {
   if (!open) return null;
@@ -37,4 +36,3 @@ export function CourseModal({ open, title = 'Add Course', initialValues = {}, on
   );
 }
 
-export default CourseModal;

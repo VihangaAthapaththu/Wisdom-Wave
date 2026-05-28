@@ -1,1 +1,0 @@
-export { ReportManagement } from './ReportManagement';

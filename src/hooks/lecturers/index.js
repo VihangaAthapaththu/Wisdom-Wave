@@ -1,0 +1,1 @@
+export { useLecturers, useLecturer, useMyLecturer, useRegisterLecturer, useDeactivateLecturer } from './useLecturers';

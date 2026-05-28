@@ -1,1 +1,0 @@
-export { LecturerDashboard } from './LecturerDashboard';

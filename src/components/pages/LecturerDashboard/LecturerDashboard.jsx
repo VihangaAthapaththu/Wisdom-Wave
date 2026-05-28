@@ -1,12 +1,9 @@
 import React from 'react';
 import { BookOpen, Users, FileText, CheckSquare, Settings, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
-import { StatCard, MenuCard } from '@/components/molecules';
-import { useMyLecturer } from '@/hooks/lecturers/useLecturers';
-import { LecturerCoursesList } from '@/components';
-import { useCourses } from '@/hooks/courses/useCourses';
-import { PageLoader } from '@/components/ui';
+import { useAuth } from "@/context";
+import { StatCard, MenuCard, PageLoader, LecturerCoursesList } from '@/components';
+import { useMyLecturer,useCourses } from '@/hooks';
 
 export function LecturerDashboard() {
   const { user, logout } = useAuth();
