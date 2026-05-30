@@ -55,10 +55,10 @@ function App() {
           <Routes>
             {/* Public routes with client navbar */}
 
-            <Route path="/" element={<LandingPage />} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
             <Route element={<ClientLayout />}>
+              <Route path="/" element={<LandingPage />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/courses" element={<CourseList />} />
               <Route path="/courses/:id" element={<CoursePage />} />

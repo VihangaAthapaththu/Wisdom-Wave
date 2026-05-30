@@ -30,7 +30,7 @@ export function LecturerDashboard() {
 
   if (isProfileLoading) {
     return (
-      <div className="bg-[#faf8f5] min-h-screen p-4 md:p-6 lg:p-10 flex items-center justify-center">
+      <div className="bg-bg-paper min-h-screen p-4 md:p-6 lg:p-10 flex items-center justify-center">
         <div className="w-full max-w-4xl min-h-[60vh] rounded-3xl bg-white/70 backdrop-blur-sm border border-[#f1e4cf] shadow-[0_20px_60px_rgba(255,165,0,0.12)] flex items-center justify-center">
           <PageLoader className="" size={280} fullScreen={false} />
         </div>
@@ -39,22 +39,22 @@ export function LecturerDashboard() {
   }
 
   return (
-    <div className="bg-[#faf8f5] min-h-screen p-4 md:p-6 lg:p-10 flex flex-col">
+    <div className="bg-bg-paper min-h-screen p-4 md:p-6 lg:p-10 flex flex-col">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between md:items-center mb-[30px] lg:mb-[50px] flex-wrap gap-5">
         <div>
-          <h1 className="text-[22px] md:text-[28px] lg:text-[40px] font-bold text-[#1a1a1a] mb-2.5 bg-gradient-to-br from-[#FFA500] to-[#ff8c00] bg-clip-text text-transparent m-0">Lecturer Dashboard</h1>
-          <p className="text-base text-[#666666] m-0">
+          <h1 className="text-[22px] md:text-[28px] lg:text-[40px] font-bold text-[#1a1a1a] mb-2.5 bg-gradient-to-br from-primary to-primary-600 bg-clip-text text-transparent m-0">Lecturer Dashboard</h1>
+          <p className="text-base text-muted m-0">
             Welcome back, {user?.name || 'Lecturer'}
-            {profile?.specialization && <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#FFA500]/10 text-[#FFA500] border border-[#FFA500]/20">{profile.specialization}</span>}
+            {profile?.specialization && <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">{profile.specialization}</span>}
           </p>
         </div>
         <div className="flex gap-[15px] items-center w-full md:w-auto">
-          <button className="w-11 h-11 rounded-[10px] bg-white border-2 border-[#e0e0e0] text-[#1a1a1a] flex items-center justify-center transition-all duration-300 hover:border-[#FFA500] hover:text-[#FFA500] cursor-pointer">
+          <button className="w-11 h-11 rounded-[10px] bg-white border-2 border-border text-[#1a1a1a] flex items-center justify-center transition-all duration-300 hover:border-primary hover:text-primary cursor-pointer">
             <Settings size={20} />
           </button>
           <button
-            className="px-5 py-2.5 bg-gradient-to-br from-[#FFA500] to-[#ff8c00] text-white border-none rounded-lg font-semibold flex items-center justify-center gap-2 transition-all duration-300 shadow-[0_4px_12px_rgba(255,165,0,0.3)] hover:-translate-y-[2px] hover:shadow-[0_6px_16px_rgba(255,165,0,0.4)] w-11 md:w-auto p-2.5 md:py-2.5 md:px-5 cursor-pointer"
+            className="px-5 py-2.5 bg-gradient-to-br from-primary to-primary-600 text-white border-none rounded-lg font-semibold flex items-center justify-center gap-2 transition-all duration-300 shadow-[0_4px_12px_rgba(255,165,0,0.3)] hover:-translate-y-[2px] hover:shadow-[0_6px_16px_rgba(255,165,0,0.4)] w-11 md:w-auto p-2.5 md:py-2.5 md:px-5 cursor-pointer"
             onClick={handleLogout}
           >
             <LogOut size={20} />

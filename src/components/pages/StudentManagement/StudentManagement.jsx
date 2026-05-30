@@ -28,10 +28,10 @@ export function StudentManagement() {
           <TableBody>
             {students.map((student) => (
               <TableRow key={student.id} className="hover:bg-[#f5f5f5] border-b border-[#e0e0e0]">
-                <TableCell className="text-[#666666] p-4"><Users size={16} className="inline mr-2" />{student.name}</TableCell>
-                <TableCell className="text-[#666666] p-4">{student.email}</TableCell>
-                <TableCell className="text-[#666666] p-4">{student.courses}</TableCell>
-                <TableCell className="text-[#666666] p-4">{student.status}</TableCell>
+                <TableCell className="text-muted p-4"><Users size={16} className="inline mr-2" />{student.name}</TableCell>
+                <TableCell className="text-muted p-4">{student.email}</TableCell>
+                <TableCell className="text-muted p-4">{student.courses}</TableCell>
+                <TableCell className="text-muted p-4">{student.status}</TableCell>
                 <TableCell className="p-4">
                   <Button size="sm" className="bg-[#FFA500] text-white hover:bg-[#ff8c00] mr-2">Edit</Button>
                   <Button size="sm" variant="destructive">Delete</Button>

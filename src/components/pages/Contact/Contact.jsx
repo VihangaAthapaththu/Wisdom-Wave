@@ -22,7 +22,7 @@ export function Contact() {
     setFormData({ name: '', email: '', subject: '', message: '' });
   };
 
-  const inputClass = "w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-900 bg-white transition-all duration-200 focus:outline-none focus:border-[#FFA500] focus:ring-2 focus:ring-[#FFA500]/10 placeholder:text-gray-400";
+  const inputClass = "w-full px-4 py-2.5 border border-border rounded-xl text-sm text-gray-900 bg-white transition-all duration-200 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 placeholder:text-gray-400";
 
   return (
     <div className="bg-gray-50/50 min-h-screen flex flex-col">
@@ -30,9 +30,9 @@ export function Contact() {
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-10 lg:mb-14">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 tracking-tight">
-            Get in <span className="text-[#FFA500]">Touch</span>
+            Get in <span className="text-primary">Touch</span>
           </h1>
-          <div className="w-16 h-1 bg-gradient-to-r from-[#FFA500] to-[#ff8c00] mx-auto rounded-full mb-5" />
+          <div className="w-16 h-1 bg-gradient-to-r from-primary to-primary-600 mx-auto rounded-full mb-5" />
           <p className="text-gray-500 text-base">Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
         </div>
 
@@ -43,12 +43,12 @@ export function Contact() {
             <ContactInfoItem
               icon={Mail}
               title="Email Address"
-              content={<a href="mailto:support@wisdomwave.com" className="text-gray-600 hover:text-[#FFA500] transition-colors text-sm">support@wisdomwave.com</a>}
+              content={<a href="mailto:support@wisdomwave.com" className="text-gray-600 hover:text-primary transition-colors text-sm">support@wisdomwave.com</a>}
             />
             <ContactInfoItem
               icon={Phone}
               title="Phone Number"
-              content={<a href="tel:+12345678901" className="text-gray-600 hover:text-[#FFA500] transition-colors text-sm">+1 (234) 567-8901</a>}
+              content={<a href="tel:+12345678901" className="text-gray-600 hover:text-primary transition-colors text-sm">+1 (234) 567-8901</a>}
             />
             <ContactInfoItem
               icon={MapPin}
@@ -82,7 +82,7 @@ export function Contact() {
                 <textarea id="message" name="message" value={formData.message} onChange={handleChange} placeholder="Write your message here..." className={`${inputClass} resize-y min-h-[120px]`} required />
               </div>
 
-              <Button type="submit" className="mt-2 bg-gradient-to-r from-[#FFA500] to-[#ff8c00] hover:from-[#ff9500] hover:to-[#e67e00] text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-md shadow-[#FFA500]/15 hover:shadow-lg hover:shadow-[#FFA500]/25 transition-all h-auto active:scale-[0.97] inline-flex items-center gap-2 self-start">
+              <Button type="submit" className="mt-2 bg-gradient-to-r from-primary to-primary-600 hover:from-primary-600 hover:to-primary text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-md shadow-[rgba(255,165,0,0.15)] hover:shadow-lg hover:shadow-[rgba(255,165,0,0.25)] transition-all h-auto active:scale-[0.97] inline-flex items-center gap-2 self-start">
                 <Send size={16} />
                 Send Message
               </Button>

@@ -34,11 +34,11 @@ export function AdminDashboard() {
             <p className="text-sm text-gray-500">Welcome back, {user?.name || 'Administrator'}</p>
           </div>
           <div className="flex gap-2 items-center">
-            <button className="w-10 h-10 rounded-xl bg-white border border-gray-200 text-gray-500 flex items-center justify-center hover:border-[#FFA500]/50 hover:text-[#FFA500] transition-colors cursor-pointer">
+            <button className="w-10 h-10 rounded-xl bg-white border border-gray-200 text-gray-500 flex items-center justify-center hover:border-primary/50 hover:text-primary transition-colors cursor-pointer">
               <Settings size={18} />
             </button>
             <button
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#FFA500] to-[#ff8c00] text-white rounded-xl font-medium text-sm shadow-md shadow-[#FFA500]/15 hover:shadow-lg hover:shadow-[#FFA500]/25 transition-all cursor-pointer active:scale-[0.97]"
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-primary to-primary-600 text-white rounded-xl font-medium text-sm shadow-md shadow-[rgba(255,165,0,0.15)] hover:shadow-lg hover:shadow-[rgba(255,165,0,0.25)] transition-all cursor-pointer active:scale-[0.97]"
               onClick={handleLogout}
             >
               <LogOut size={16} />

@@ -28,10 +28,10 @@ export function CourseMaterialManagement() {
           <TableBody>
             {materials.map((material) => (
               <TableRow key={material.id} className="hover:bg-[#f5f5f5] border-b border-[#e0e0e0]">
-                <TableCell className="text-[#666666] p-4"><FileText size={16} className="inline mr-2" />{material.title}</TableCell>
-                <TableCell className="text-[#666666] p-4">{material.type}</TableCell>
-                <TableCell className="text-[#666666] p-4">{material.date}</TableCell>
-                <TableCell className="text-[#666666] p-4">{material.size}</TableCell>
+                <TableCell className="text-muted p-4"><FileText size={16} className="inline mr-2" />{material.title}</TableCell>
+                <TableCell className="text-muted p-4">{material.type}</TableCell>
+                <TableCell className="text-muted p-4">{material.date}</TableCell>
+                <TableCell className="text-muted p-4">{material.size}</TableCell>
                 <TableCell className="p-4 flex gap-2">
                   <Button size="sm" className="bg-[#FFA500] text-white hover:bg-[#ff8c00]">
                     <Download size={14} />

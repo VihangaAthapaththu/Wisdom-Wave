@@ -10,7 +10,7 @@ export function Progress({ className, children, value = 0, max = 100, ...props }
     <div className={cn('flex w-full flex-col gap-3', className)} {...props}>
       {children}
       <div className="h-1 w-full overflow-hidden rounded-full bg-gray-200">
-        <div className="h-full rounded-full bg-[#FFA500] transition-all" style={{ width: `${percent}%` }} />
+        <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${percent}%` }} />
       </div>
     </div>
   );
@@ -21,7 +21,7 @@ export function ProgressTrack({ className, ...props }) {
 }
 
 export function ProgressIndicator({ className, ...props }) {
-  return <div className={cn('h-full rounded-full bg-[#FFA500]', className)} {...props} />;
+  return <div className={cn('h-full rounded-full bg-primary', className)} {...props} />;
 }
 
 export function ProgressLabel({ className, ...props }) {

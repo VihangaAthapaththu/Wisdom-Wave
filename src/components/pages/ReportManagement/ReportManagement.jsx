@@ -27,9 +27,9 @@ export function ReportManagement() {
           <TableBody>
             {reports.map((report) => (
               <TableRow key={report.id} className="hover:bg-[#f5f5f5] border-b border-[#e0e0e0]">
-                <TableCell className="text-[#666666] p-4"><BarChart3 size={16} className="inline mr-2" />{report.title}</TableCell>
-                <TableCell className="text-[#666666] p-4">{report.date}</TableCell>
-                <TableCell className="text-[#666666] p-4">{report.status}</TableCell>
+                <TableCell className="text-muted p-4"><BarChart3 size={16} className="inline mr-2" />{report.title}</TableCell>
+                <TableCell className="text-muted p-4">{report.date}</TableCell>
+                <TableCell className="text-muted p-4">{report.status}</TableCell>
                 <TableCell className="p-4">
                   <Button size="sm" className="bg-[#FFA500] text-white hover:bg-[#ff8c00]">
                     <Download size={14} className="inline" />

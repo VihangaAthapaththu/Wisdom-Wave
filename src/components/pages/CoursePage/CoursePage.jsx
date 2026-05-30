@@ -23,7 +23,7 @@ export function CoursePage() {
               <ul className="space-y-2.5">
                 {['React Components and JSX', 'State Management with Hooks', 'Component Lifecycle', 'API Integration', 'Building Real Projects'].map((item, i) => (
                   <li key={i} className="flex items-center gap-2.5 text-sm text-gray-600">
-                    <CheckCircle size={16} className="text-[#FFA500] shrink-0" />
+                    <CheckCircle size={16} className="text-primary shrink-0" />
                     {item}
                   </li>
                 ))}
@@ -40,8 +40,8 @@ export function CoursePage() {
                   { icon: Star, label: 'Rating', value: '4.8/5.0' },
                 ].map((item, i) => (
                   <div key={i} className="flex items-center gap-3 pb-4 border-b border-gray-50 last:border-b-0 last:pb-0">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#FFA500]/15 to-[#ff8c00]/10 flex items-center justify-center shrink-0">
-                      <item.icon size={18} className="text-[#FFA500]" />
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/15 to-primary-600/10 flex items-center justify-center shrink-0">
+                      <item.icon size={18} className="text-primary" />
                     </div>
                     <div>
                       <p className="text-xs text-gray-400 uppercase tracking-wider mb-0.5">{item.label}</p>
@@ -50,7 +50,7 @@ export function CoursePage() {
                   </div>
                 ))}
               </div>
-              <Button className="w-full bg-gradient-to-r from-[#FFA500] to-[#ff8c00] hover:from-[#ff9500] hover:to-[#e67e00] text-white py-3 rounded-xl font-semibold text-sm shadow-md shadow-[#FFA500]/15 hover:shadow-lg hover:shadow-[#FFA500]/25 transition-all h-auto active:scale-[0.97]">
+              <Button className="w-full bg-gradient-to-r from-primary to-primary-600 hover:from-primary-600 hover:to-primary text-white py-3 rounded-xl font-semibold text-sm shadow-md shadow-[rgba(255,165,0,0.15)] hover:shadow-lg hover:shadow-[rgba(255,165,0,0.25)] transition-all h-auto active:scale-[0.97]">
                 Enroll Now
               </Button>
             </Card>

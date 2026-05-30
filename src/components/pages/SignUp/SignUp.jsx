@@ -70,17 +70,17 @@ const BEAM_CSS = `
   .wsu-input {
     width: 100%;
     padding: 11px 14px;
-    border: 1.5px solid #ede9e3;
+    border: 1.5px solid var(--border-light);
     border-radius: 12px;
     font-family: 'Outfit', sans-serif;
     font-size: 14px;
-    color: #1a1714;
-    background: #faf8f5;
+    color: var(--text);
+    background: var(--bg-paper);
     transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
     outline: none;
   }
   .wsu-input:focus {
-    border-color: #FFA500;
+    border-color: var(--primary-color);
     box-shadow: 0 0 0 4px rgba(255,165,0,0.18);
     background: #fff;
   }
@@ -91,7 +91,7 @@ const BEAM_CSS = `
 
   .wsu-btn {
     width: 100%; padding: 13px;
-    background: #FFA500; color: #fff;
+    background: var(--primary-color); color: #fff;
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 700; font-size: 15px;
     border: none; border-radius: 12px; cursor: pointer;
@@ -101,7 +101,7 @@ const BEAM_CSS = `
     letter-spacing: 0.01em;
   }
   .wsu-btn:hover:not(:disabled) {
-    background: #FF9500; transform: translateY(-2px);
+    background: var(--primary-600); transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(255,165,0,0.45);
   }
   .wsu-btn:active:not(:disabled) { transform: translateY(0); }
@@ -118,14 +118,14 @@ const BEAM_CSS = `
   .eye-btn {
     position: absolute; right: 13px; top: 50%; transform: translateY(-50%);
     background: none; border: none; cursor: pointer; padding: 0;
-    color: #9e9890; display: flex; align-items: center;
+    color: var(--muted-hint); display: flex; align-items: center;
     transition: color 0.15s;
   }
-  .eye-btn:hover { color: #FFA500; }
+  .eye-btn:hover { color: var(--primary-color); }
   .eye-btn:disabled { cursor: not-allowed; }
-  .wsu-link { color: #FFA500; font-weight: 600; text-decoration: none; }
+  .wsu-link { color: var(--primary-color); font-weight: 600; text-decoration: none; }
   .wsu-link:hover { text-decoration: underline; }
-  .wsu-check { accent-color: #FFA500; width: 15px; height: 15px; cursor: pointer; flex-shrink: 0; margin-top: 2px; }
+  .wsu-check { accent-color: var(--primary-color); width: 15px; height: 15px; cursor: pointer; flex-shrink: 0; margin-top: 2px; }
 `;
 
 function StyleInjector() {
@@ -188,10 +188,10 @@ function getStrength(pw) {
   if (/[A-Z]/.test(pw)) s++;
   if (/[0-9]/.test(pw)) s++;
   if (/[^A-Za-z0-9]/.test(pw)) s++;
-  if (s <= 1) return { score: 1, label: 'Weak',   color: '#e53e3e' };
-  if (s === 2) return { score: 2, label: 'Fair',   color: '#dd6b20' };
-  if (s === 3) return { score: 3, label: 'Good',   color: '#d69e2e' };
-  return               { score: 4, label: 'Strong', color: '#38a169' };
+  if (s <= 1) return { score: 1, label: 'Weak',   color: 'var(--danger)' };
+  if (s === 2) return { score: 2, label: 'Fair',   color: 'var(--warn)' };
+  if (s === 3) return { score: 3, label: 'Good',   color: 'var(--warn)' };
+  return               { score: 4, label: 'Strong', color: 'var(--success)' };
 }
 
 /* ── Helpers ─────────────────────────────────────────────── */
@@ -319,80 +319,63 @@ export function SignUp() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-5"
-      style={{ background: '#faf8f5', fontFamily: "'Outfit', sans-serif", color: '#1a1714' }}>
+    <div className="min-h-screen flex items-center justify-center p-5 bg-bg-paper font-sans text-text">
       <StyleInjector />
 
-      <div className="w-full grid overflow-hidden relative"
-        style={{
-          maxWidth: 960,
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-          borderRadius: 24,
-          boxShadow: '0 24px 64px rgba(0,0,0,0.10), 0 4px 16px rgba(0,0,0,0.06)',
-          minHeight: 680,
-        }}>
+      <div className="w-full grid overflow-hidden relative max-w-[960px] rounded-[24px] min-h-[680px]"
+        style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', boxShadow: '0 24px 64px rgba(0,0,0,0.10), 0 4px 16px rgba(0,0,0,0.06)' }}>
 
         {/* ── LEFT — brand ── */}
-        <div className="relative flex flex-col justify-between overflow-hidden"
-          style={{
-            background: 'linear-gradient(145deg, #FF9A00 0%, #FF6200 100%)',
-            padding: '52px 48px',
-          }}>
+        <div className="relative flex flex-col justify-between overflow-hidden bg-gradient-to-br from-primary to-primary-600 p-[52px_48px]">
           <LightBeams />
 
           <div className="relative z-10">
             {/* Logo */}
             <div className="flex items-center gap-2.5 mb-12">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center"
-                style={{ background: 'rgba(255,255,255,0.92)', boxShadow: '0 4px 12px rgba(0,0,0,0.12)' }}>
-                <span style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 800, fontSize: 20, color: '#FF7A00', lineHeight: 1 }}>W</span>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/92 shadow-[0_4px_12px_rgba(0,0,0,0.12)]">
+                <span className="font-sans font-extrabold text-[20px] text-primary-600 leading-none">W</span>
               </div>
-              <span style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 700, fontSize: 16, color: '#fff', letterSpacing: '0.02em' }}>
+              <span className="font-sans font-bold text-[16px] text-white tracking-[0.02em]">
                 Wisdom Wave
               </span>
             </div>
 
-            <p style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 800, fontSize: 38, color: '#fff', lineHeight: 1.18, marginBottom: 16 }}>
+            <p className="text-title-1 font-extrabold text-white mb-4 leading-[1.18]">
               Start your<br />learning<br />journey today.
             </p>
-            <p style={{ color: 'rgba(255,255,255,0.82)', fontSize: 15, lineHeight: 1.7, maxWidth: 270 }}>
+            <p className="text-body-md text-white/80 max-w-[270px] leading-[1.7]">
               Join a global community of IT professionals building real skills through hands-on courses.
             </p>
           </div>
 
           {/* Feature pills */}
           <div className="relative z-10">
-            <div className="flex flex-col gap-3 pt-7" style={{ borderTop: '1px solid rgba(255,255,255,0.25)' }}>
+            <div className="flex flex-col gap-3 pt-7 border-t border-white/25">
               {['✦  Personalized learning paths', '✦  Industry-recognized certificates', '✦  Expert mentor support', '✦  Real-time progress tracking'].map(t => (
-                <div key={t} style={{ fontSize: 13, color: 'rgba(255,255,255,0.88)' }}>{t}</div>
+                <div key={t} className="text-[13px] text-white/90">{t}</div>
               ))}
             </div>
           </div>
         </div>
 
         {/* ── RIGHT — form ── */}
-        <div className="relative flex flex-col justify-center overflow-hidden overflow-y-auto"
-          style={{ background: '#fff', padding: '44px 48px' }}>
+        <div className="relative flex flex-col justify-center overflow-hidden overflow-y-auto bg-white p-[44px_48px]">
           <DotCanvas />
           <div className="relative z-10">
 
             {/* Header */}
             <div className="wsu-rise wsu-d0 mb-7">
-              <p style={{ fontSize: 12, fontWeight: 600, color: '#FFA500', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
-                Create your account
-              </p>
-              <h2 style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontWeight: 800, fontSize: 30, color: '#1a1714', lineHeight: 1.15 }}>
-                Get started for free
-              </h2>
-              <p style={{ color: '#9e9890', fontSize: 14, marginTop: 8 }}>Takes under a minute. No credit card needed.</p>
+              <p className="text-body-xs font-semibold text-primary uppercase tracking-[0.1em] mb-2">Create your account</p>
+              <h2 className="text-title-2 font-extrabold text-text mb-1">Get started for free</h2>
+              <p className="text-body-sm text-muted-hint mt-2">Takes under a minute. No credit card needed.</p>
             </div>
 
             {/* Global error */}
             {(error || fieldErrors.length > 0) && (
-              <div className="wsu-fade-in flex gap-2.5 items-start mb-5 rounded-xl p-3"
-                style={{ background: '#FFF5F5', border: '1.5px solid #FED7D7' }}>
+              <div className="wsu-fade-in flex gap-2.5 items-start mb-5 rounded-xl p-3 bg-[rgba(255,245,245,1)]"
+                style={{ border: '1.5px solid rgba(254,215,215,1)' }}>
                 <InfoIcon />
-                <div style={{ color: '#e53e3e', fontSize: 13 }}>
+                <div className="text-[13px] text-danger">
                   {error && <span>{error}</span>}
                   {fieldErrors.map((fe, i) => <div key={i}>{fe.message}</div>)}
                 </div>
@@ -403,7 +386,7 @@ export function SignUp() {
 
               {/* Full name */}
               <div className="wsu-rise wsu-d1">
-                <label className="block mb-1.5" style={{ fontSize: 13, fontWeight: 600, color: '#4b4540', fontFamily: "'Plus Jakarta Sans',sans-serif" }}
+                <label className="block mb-1.5 text-[13px] font-semibold text-[var(--text)]"
                   htmlFor="su-name">Full Name</label>
                 <div className="relative">
                   <input className={ic('fullName')} style={{ paddingRight: touched.fullName && !fieldErr('fullName') && form.fullName ? 40 : 14 }}
@@ -411,7 +394,7 @@ export function SignUp() {
                     onChange={onChange} onBlur={onBlur} placeholder="Your full name"
                     autoComplete="name" required disabled={loading} />
                   {touched.fullName && !fieldErr('fullName') && form.fullName && (
-                    <span className="absolute top-1/2 -translate-y-1/2 right-3.5 flex" style={{ color: '#38a169' }}>
+                    <span className="absolute top-1/2 -translate-y-1/2 right-3.5 flex" style={{ color: 'var(--success)' }}>
                       <CheckIcon />
                     </span>
                   )}
@@ -421,7 +404,7 @@ export function SignUp() {
 
               {/* Email */}
               <div className="wsu-rise wsu-d2">
-                <label className="block mb-1.5" style={{ fontSize: 13, fontWeight: 600, color: '#4b4540', fontFamily: "'Plus Jakarta Sans',sans-serif" }}
+                <label className="block mb-1.5 text-[13px] font-semibold text-[var(--text)]"
                   htmlFor="su-email">Email Address</label>
                 <div className="relative">
                   <input className={ic('email')} style={{ paddingRight: touched.email && !fieldErr('email') && form.email ? 40 : 14 }}
@@ -429,7 +412,7 @@ export function SignUp() {
                     onChange={onChange} onBlur={onBlur} placeholder="you@example.com"
                     autoComplete="email" required disabled={loading} />
                   {touched.email && !fieldErr('email') && form.email && (
-                    <span className="absolute top-1/2 -translate-y-1/2 right-3.5 flex" style={{ color: '#38a169' }}>
+                    <span className="absolute top-1/2 -translate-y-1/2 right-3.5 flex" style={{ color: 'var(--success)' }}>
                       <CheckIcon />
                     </span>
                   )}
@@ -441,7 +424,7 @@ export function SignUp() {
               <div className="wsu-rise wsu-d3 grid gap-3.5" style={{ gridTemplateColumns: '1fr 1fr' }}>
                 {/* Password */}
                 <div>
-                  <label className="block mb-1.5" style={{ fontSize: 13, fontWeight: 600, color: '#4b4540', fontFamily: "'Plus Jakarta Sans',sans-serif" }}
+                  <label className="block mb-1.5 text-[13px] font-semibold text-[var(--text)]"
                     htmlFor="su-pw">Password</label>
                   <div className="relative">
                     <input className={ic('password')} style={{ paddingRight: 44 }}
@@ -465,7 +448,7 @@ export function SignUp() {
 
                 {/* Confirm */}
                 <div>
-                  <label className="block mb-1.5" style={{ fontSize: 13, fontWeight: 600, color: '#4b4540', fontFamily: "'Plus Jakarta Sans',sans-serif" }}
+                  <label className="block mb-1.5 text-[13px] font-semibold text-[var(--text)]"
                     htmlFor="su-cpw">Confirm Password</label>
                   <div className="relative">
                     <input className={ic('confirmPassword')} style={{ paddingRight: 44 }}
@@ -476,7 +459,7 @@ export function SignUp() {
                   </div>
                   {form.confirmPassword && form.password && (
                     <p className="flex items-center gap-1 mt-1.5"
-                      style={{ fontSize: 11, fontWeight: 600, color: match ? '#38a169' : '#e53e3e' }}>
+                      style={{ fontSize: 11, fontWeight: 600, color: match ? 'var(--success)' : 'var(--danger)' }}>
                       {match
                         ? <><CheckIcon size={11} /> Passwords match</>
                         : <><CrossIcon /> Don't match</>}
@@ -489,7 +472,7 @@ export function SignUp() {
               <div className="wsu-rise wsu-d4 flex items-start gap-2.5 mt-0.5">
                 <input className="wsu-check" type="checkbox" id="su-terms" name="acceptTerms"
                   checked={form.acceptTerms} onChange={onChange} disabled={loading} />
-                <label htmlFor="su-terms" style={{ fontSize: 13, color: '#4b4540', cursor: 'pointer', lineHeight: 1.5, userSelect: 'none' }}>
+                <label htmlFor="su-terms" className="text-[13px] text-[var(--text)] cursor-pointer leading-[1.5] select-none">
                   I agree to the{' '}
                   <a href="#terms" className="wsu-link">Terms of Service</a> and{' '}
                   <a href="#privacy" className="wsu-link">Privacy Policy</a>

@@ -23,7 +23,7 @@ export function LessonPage() {
               <ul className="space-y-2.5">
                 {['Components', 'Props', 'State', 'JSX'].map((item, i) => (
                   <li key={i} className="flex items-center gap-2.5 text-sm text-gray-600">
-                    <CheckCircle size={16} className="text-[#FFA500] shrink-0" />
+                    <CheckCircle size={16} className="text-primary shrink-0" />
                     {item}
                   </li>
                 ))}
@@ -34,10 +34,10 @@ export function LessonPage() {
           <div>
             <Card className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm sticky top-20">
               <p className="text-xs text-gray-400 uppercase tracking-wider mb-2.5 font-medium">Lesson Progress</p>
-              <Progress value={65} className="h-2 bg-gray-100 [&>div]:bg-gradient-to-r [&>div]:from-[#FFA500] [&>div]:to-[#ff8c00] [&>div]:rounded-full mb-2" />
-              <p className="text-right text-sm font-bold text-[#FFA500] mb-5">65%</p>
+              <Progress value={65} className="h-2 bg-gray-100 [&>div]:bg-gradient-to-r [&>div]:from-primary [&>div]:to-primary-600 [&>div]:rounded-full mb-2" />
+              <p className="text-right text-sm font-bold text-primary mb-5">65%</p>
 
-              <Button className="w-full bg-gradient-to-r from-[#FFA500] to-[#ff8c00] hover:from-[#ff9500] hover:to-[#e67e00] text-white py-3 rounded-xl font-semibold text-sm shadow-md shadow-[#FFA500]/15 hover:shadow-lg hover:shadow-[#FFA500]/25 transition-all h-auto active:scale-[0.97] flex items-center justify-center gap-2">
+              <Button className="w-full bg-gradient-to-r from-primary to-primary-600 hover:from-primary-600 hover:to-primary text-white py-3 rounded-xl font-semibold text-sm shadow-md shadow-[rgba(255,165,0,0.15)] hover:shadow-lg hover:shadow-[rgba(255,165,0,0.25)] transition-all h-auto active:scale-[0.97] flex items-center justify-center gap-2">
                 Continue
                 <ArrowRight size={16} />
               </Button>

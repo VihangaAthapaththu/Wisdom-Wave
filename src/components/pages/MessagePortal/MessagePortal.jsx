@@ -28,7 +28,7 @@ export function MessagePortal() {
           <TableBody>
             {messages.map((msg) => (
               <TableRow key={msg.id} className="hover:bg-[#f5f5f5] border-b border-[#e0e0e0]">
-                <TableCell className="text-[#666666] p-4">{msg.from}</TableCell>
+                <TableCell className="text-muted p-4">{msg.from}</TableCell>
                 <TableCell className="text-[#666666] p-4"><Mail size={16} className="inline mr-2" />{msg.subject}</TableCell>
                 <TableCell className="text-[#666666] p-4">{msg.time}</TableCell>
                 <TableCell className="text-[#666666] p-4">{msg.read ? 'Read' : 'Unread'}</TableCell>

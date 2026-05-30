@@ -16,8 +16,8 @@ export function LecturerCoursesList({ courses = [], onEdit, onDelete }) {
       {courses.map((course) => (
         <Card key={course._id || course.id} className="flex items-center justify-between p-4">
           <div className="flex items-start gap-4 min-w-0">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#FFA500]/15 to-[#ff8c00]/10 flex items-center justify-center shrink-0">
-              <BookOpen size={18} className="text-[#FFA500]" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/15 to-primary-600/10 flex items-center justify-center shrink-0">
+              <BookOpen size={18} className="text-primary" />
             </div>
             <div className="min-w-0">
               <h3 className="text-base font-semibold text-gray-900 truncate">{course.title}</h3>
@@ -28,7 +28,7 @@ export function LecturerCoursesList({ courses = [], onEdit, onDelete }) {
           {(onEdit || onDelete) && (
             <div className="flex items-center gap-2">
               {onEdit && (
-                <Button size="sm" className="bg-[#FFA500] text-white" onClick={() => onEdit(course)}>
+                <Button size="sm" className="bg-primary text-white" onClick={() => onEdit(course)}>
                   <Edit size={14} />
                 </Button>
               )}

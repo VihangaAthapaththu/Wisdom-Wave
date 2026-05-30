@@ -27,14 +27,14 @@ export function CourseList() {
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-10 lg:mb-14">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 tracking-tight">
-            Explore Our <span className="text-[#FFA500]">Courses</span>
+            Explore Our <span className="text-primary">Courses</span>
           </h1>
           <p className="text-gray-500 text-base sm:text-lg">Choose from hundreds of courses and start learning today</p>
         </div>
 
         {/* Filters */}
         <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-4 mb-8 lg:mb-10">
-          <div className="flex items-center gap-2.5 flex-1 lg:max-w-md bg-white px-4 py-2.5 rounded-xl border border-gray-200 focus-within:border-[#FFA500] focus-within:ring-2 focus-within:ring-[#FFA500]/10 transition-all">
+          <div className="flex items-center gap-2.5 flex-1 lg:max-w-md bg-white px-4 py-2.5 rounded-xl border border-gray-200 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/10 transition-all">
             <Search size={18} className="text-gray-400 shrink-0" />
             <input
               type="text"
@@ -51,8 +51,8 @@ export function CourseList() {
                 key={level}
                 className={`px-4 py-2 border rounded-xl font-medium text-sm cursor-pointer transition-all duration-200 ${
                   selectedLevel === level
-                    ? 'bg-[#FFA500] text-white border-[#FFA500] shadow-md shadow-[#FFA500]/15'
-                    : 'border-gray-200 bg-white text-gray-600 hover:border-[#FFA500]/50 hover:text-[#FFA500]'
+                    ? 'bg-primary text-white border-primary shadow-md shadow-[rgba(255,165,0,0.15)]'
+                    : 'border-gray-200 bg-white text-gray-600 hover:border-primary/50 hover:text-primary'
                 }`}
                 onClick={() => setSelectedLevel(level)}
               >

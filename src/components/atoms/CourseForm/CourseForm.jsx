@@ -94,31 +94,31 @@ export function CourseForm({
       )}
 
       <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-semibold text-[#1a1a1a]">Title</label>
+        <label className="text-sm font-semibold text-text-strong">Title</label>
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Course title"
-          className="w-full px-3.5 py-2.5 border-2 border-[#e0e0e0] rounded-lg text-sm transition-colors duration-200 focus:outline-none focus:border-[#FFA500] focus:ring-[3px] focus:ring-[#FFA500]/10"
+          className="w-full px-3.5 py-2.5 border-2 border-border rounded-lg text-sm transition-colors duration-200 focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary/10"
         />
-        {getFieldError('title') && <p className="text-xs text-red-600 mt-1">{getFieldError('title')}</p>}
+        {getFieldError('title') && <p className="text-xs text-danger mt-1">{getFieldError('title')}</p>}
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-semibold text-[#1a1a1a]">Description</label>
+        <label className="text-sm font-semibold text-text-strong">Description</label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Short summary of the course"
           rows={4}
-          className="w-full px-3.5 py-2.5 border-2 border-[#e0e0e0] rounded-lg text-sm transition-colors duration-200 focus:outline-none focus:border-[#FFA500] focus:ring-[3px] focus:ring-[#FFA500]/10"
+          className="w-full px-3.5 py-2.5 border-2 border-border rounded-lg text-sm transition-colors duration-200 focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary/10"
         />
-        {getFieldError('description') && <p className="text-xs text-red-600 mt-1">{getFieldError('description')}</p>}
+        {getFieldError('description') && <p className="text-xs text-danger mt-1">{getFieldError('description')}</p>}
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-semibold text-[#1a1a1a]">Duration (hours)</label>
+          <label className="text-sm font-semibold text-text-strong">Duration (hours)</label>
           <input
             type="number"
             min="0"
@@ -126,13 +126,13 @@ export function CourseForm({
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
             placeholder="e.g. 12"
-            className="w-full px-3.5 py-2.5 border-2 border-[#e0e0e0] rounded-lg text-sm transition-colors duration-200 focus:outline-none focus:border-[#FFA500] focus:ring-[3px] focus:ring-[#FFA500]/10"
+            className="w-full px-3.5 py-2.5 border-2 border-border rounded-lg text-sm transition-colors duration-200 focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary/10"
           />
-          {getFieldError('duration') && <p className="text-xs text-red-600 mt-1">{getFieldError('duration')}</p>}
+          {getFieldError('duration') && <p className="text-xs text-danger mt-1">{getFieldError('duration')}</p>}
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-semibold text-[#1a1a1a]">Fee (USD)</label>
+          <label className="text-sm font-semibold text-text-strong">Fee (USD)</label>
           <input
             type="number"
             min="0"
@@ -140,18 +140,18 @@ export function CourseForm({
             value={fee}
             onChange={(e) => setFee(e.target.value)}
             placeholder="e.g. 49.99"
-            className="w-full px-3.5 py-2.5 border-2 border-[#e0e0e0] rounded-lg text-sm transition-colors duration-200 focus:outline-none focus:border-[#FFA500] focus:ring-[3px] focus:ring-[#FFA500]/10"
+            className="w-full px-3.5 py-2.5 border-2 border-border rounded-lg text-sm transition-colors duration-200 focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary/10"
           />
-          {getFieldError('fee') && <p className="text-xs text-red-600 mt-1">{getFieldError('fee')}</p>}
+          {getFieldError('fee') && <p className="text-xs text-danger mt-1">{getFieldError('fee')}</p>}
         </div>
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label className="text-sm font-semibold text-[#1a1a1a]">Assigned Lecturer</label>
+        <label className="text-sm font-semibold text-text-strong">Assigned Lecturer</label>
         <select
           value={lecturerId}
           onChange={(e) => setLecturerId(e.target.value)}
-          className="w-full px-3.5 py-2.5 border-2 border-[#e0e0e0] rounded-lg text-sm transition-colors duration-200 focus:outline-none focus:border-[#FFA500] focus:ring-[3px] focus:ring-[#FFA500]/10 bg-white"
+          className="w-full px-3.5 py-2.5 border-2 border-border rounded-lg text-sm transition-colors duration-200 focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary/10 bg-white"
           disabled={isLecturersLoading}
         >
           <option value="">Unassigned</option>
@@ -165,7 +165,7 @@ export function CourseForm({
             );
           })}
         </select>
-        <p className="text-xs text-[#666666]">Admin can assign or reassign a lecturer later from the course form.</p>
+        <p className="text-xs text-muted">Admin can assign or reassign a lecturer later from the course form.</p>
         {getFieldError('lecturer') && <p className="text-xs text-red-600 mt-1">{getFieldError('lecturer')}</p>}
       </div>
 
@@ -179,7 +179,7 @@ export function CourseForm({
           <Button type="button" variant="outline" onClick={onCancel} className="h-11">
             Cancel
           </Button>
-          <Button type="submit" className="h-11 bg-gradient-to-r from-[#FFA500] to-[#ff8c00] text-white" disabled={isSubmitting}>
+          <Button type="submit" className="h-11" disabled={isSubmitting}>
             {isSubmitting ? (
               <span className="flex items-center gap-2">
                 <Loader2 size={16} className="animate-spin" /> Saving...

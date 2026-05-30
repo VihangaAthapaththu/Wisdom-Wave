@@ -50,7 +50,7 @@ function DotCanvas() {
 function FieldErr({ msg }) {
   if (!msg) return null;
   return (
-    <p className="flex items-center gap-1 mt-1.5 text-[11px] text-red-500 font-medium animate-[fadeIn_0.15s_ease]">
+    <p className="flex items-center gap-1 mt-1.5 text-[11px] text-danger font-medium animate-[fadeIn_0.15s_ease]">
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
       </svg>
@@ -104,13 +104,13 @@ export function SignIn() {
   };
 
   const inputCls = field =>
-    `w-full px-4 py-3 rounded-xl border-[1.5px] bg-[#faf8f5] text-[14px] text-gray-800 placeholder:text-gray-400 transition-all duration-200 outline-none
+    `w-full px-4 py-3 rounded-xl border-[1.5px] bg-bg-paper text-[14px] text-gray-800 placeholder:text-gray-400 transition-all duration-200 outline-none
     ${fieldErr(field)
       ? 'border-red-400 focus:border-red-400 focus:ring-4 focus:ring-red-100'
-      : 'border-gray-200 focus:border-[#FFA500] focus:ring-4 focus:ring-orange-100 focus:bg-white'}`;
+      : 'border-border focus:border-primary focus:ring-4 focus:ring-primary/10 focus:bg-white'}`;
 
   return (
-    <div className="min-h-screen bg-[#faf8f5] flex items-center justify-center p-5 font-[Outfit,sans-serif]">
+    <div className="min-h-screen bg-bg-paper flex items-center justify-center p-5 font-sans">
       {/* Font import */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Outfit:wght@400;500;600&display=swap');
@@ -133,8 +133,7 @@ export function SignIn() {
       <div className="w-full max-w-[960px] rounded-[24px] overflow-hidden shadow-[0_24px_64px_rgba(0,0,0,0.10),0_4px_16px_rgba(0,0,0,0.06)] flex flex-col md:flex-row min-h-[620px]">
 
         {/* ── LEFT PANEL ── */}
-        <div className="w-full md:w-[45%] relative overflow-hidden flex flex-col justify-between p-[52px_48px] text-white"
-          style={{ background: 'linear-gradient(145deg,#FF9A00 0%,#FF6000 100%)' }}>
+        <div className="w-full md:w-[45%] relative overflow-hidden flex flex-col justify-between p-[52px_48px] text-white bg-gradient-to-br from-primary to-primary-600">
 
           {/* Floating shapes */}
           <div className="float-a absolute top-10 right-8 w-20 h-20 rounded-2xl bg-white/15" />
@@ -151,7 +150,7 @@ export function SignIn() {
             {/* Logo */}
             <div className="flex items-center gap-2.5 mb-14">
               <div className="w-10 h-10 bg-white/90 rounded-xl flex items-center justify-center shadow-md">
-                <span className="jakarta font-extrabold text-xl text-[#FF7A00] leading-none">W</span>
+                <span className="jakarta font-extrabold text-xl text-primary-700 leading-none">W</span>
               </div>
               <span className="jakarta font-bold text-[15px] tracking-wide">Wisdom Wave</span>
             </div>
@@ -182,7 +181,7 @@ export function SignIn() {
           <div className="relative z-10">
             {/* Header */}
             <div className="anim-rise mb-9" style={{ animationDelay: '0s' }}>
-              <p className="text-[11px] font-semibold text-[#FFA500] uppercase tracking-[0.12em] mb-2">
+              <p className="text-[11px] font-semibold text-primary uppercase tracking-[0.12em] mb-2">
                 Sign in to your account
               </p>
               <h2 className="jakarta font-extrabold text-[30px] text-gray-900 leading-tight">
@@ -224,7 +223,7 @@ export function SignIn() {
               <div className="anim-rise" style={{ animationDelay: '0.14s' }}>
                 <div className="flex items-center justify-between mb-1.5">
                   <label htmlFor="si-pw" className="text-[13px] font-semibold text-gray-700">Password</label>
-                  <a href="#forgot" className="text-[12.5px] font-semibold text-[#FFA500] hover:underline">Forgot password?</a>
+                  <a href="#forgot" className="text-[12.5px] font-semibold text-primary hover:underline">Forgot password?</a>
                 </div>
                 <div className="relative">
                   <input
@@ -235,7 +234,7 @@ export function SignIn() {
                   />
                   <button type="button" onClick={() => setShowPw(v => !v)} disabled={loading}
                     aria-label={showPw ? 'Hide password' : 'Show password'}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#FFA500] transition-colors duration-150 focus:outline-none">
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors duration-150 focus:outline-none">
                     {showPw ? <EyeOff size={17} /> : <Eye size={17} />}
                   </button>
                 </div>
@@ -247,7 +246,7 @@ export function SignIn() {
                 <input
                   type="checkbox" id="si-remember" name="rememberMe"
                   checked={form.rememberMe} onChange={onChange} disabled={loading}
-                  className="w-[15px] h-[15px] cursor-pointer accent-[#FFA500] rounded"
+                  className="w-[15px] h-[15px] cursor-pointer accent-primary rounded"
                 />
                 <label htmlFor="si-remember" className="text-[13px] text-gray-500 cursor-pointer select-none">
                   Remember me for 30 days
@@ -257,7 +256,7 @@ export function SignIn() {
               {/* Submit */}
               <div className="anim-rise" style={{ animationDelay: '0.28s' }}>
                 <button type="submit" disabled={loading}
-                  className="w-full py-3.5 rounded-xl bg-[#FFA500] hover:bg-[#FF9500] active:bg-[#e68900] text-white font-bold text-[15px] tracking-wide transition-all duration-200 shadow-[0_4px_16px_rgba(255,165,0,0.35)] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(255,165,0,0.42)] disabled:opacity-60 disabled:cursor-not-allowed disabled:translate-y-0 disabled:shadow-none relative overflow-hidden">
+                  className="w-full py-3.5 rounded-xl bg-primary hover:bg-primary-700 active:bg-[#e68900] text-white font-bold text-[15px] tracking-wide transition-all duration-200 shadow-[0_4px_16px_rgba(255,165,0,0.35)] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(255,165,0,0.42)] disabled:opacity-60 disabled:cursor-not-allowed disabled:translate-y-0 disabled:shadow-none relative overflow-hidden">
                   <span className="relative z-10 flex items-center justify-center gap-2">
                     {loading && <svg className="spin-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>}
                     {loading ? 'Signing in…' : 'Sign In'}
@@ -269,7 +268,7 @@ export function SignIn() {
 
             <p className="anim-rise text-center mt-7 text-[13.5px] text-gray-400" style={{ animationDelay: '0.35s' }}>
               Don't have an account?{' '}
-              <Link to="/signup" className="text-[#FFA500] font-semibold hover:underline">Create one now</Link>
+              <Link to="/signup" className="text-primary font-semibold hover:underline">Create one now</Link>
             </p>
           </div>
         </div>
