@@ -10,7 +10,7 @@ export function PageLoader({ animationPath, className = '', size = 160, loop = t
 
   const src = animationPath || defaultLottie;
 
-  const containerClass = `${fullScreen ? 'fixed inset-0 bg-white/80 z-50' : ''} flex items-center justify-center ${className}`.trim();
+  const containerClass = `${fullScreen ? 'fixed inset-0 bg-white z-50' : ''} flex items-center justify-center ${className}`.trim();
 
   // SVG fallback
   if (src.endsWith('.svg')) {

@@ -1,25 +1,39 @@
-import React from 'react';
-import { X } from 'lucide-react';
-import { Card,CourseForm } from '@/components';
+import React from "react";
+import { X,GraduationCap } from "lucide-react";
+import { Button, Card, CourseForm } from "@/components";
 
-export function CourseModal({ open, title = 'Add Course', initialValues = {}, onClose, onSave, isSubmitting }) {
+export function CourseModal({
+  open,
+  title = "Add Course",
+  initialValues = {},
+  onClose,
+  onSave,
+  isSubmitting,
+}) {
   if (!open) return null;
-  const formKey = initialValues._id || initialValues.id || 'new-course';
+  const formKey = initialValues._id || initialValues.id || "new-course";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
       <Card className="w-full max-w-lg bg-white rounded-2xl shadow-2xl border-none p-0 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         <div className="flex items-center justify-between px-6 py-5 border-b border-[#f0f0f0]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary-600 flex items-center justify-center" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary-600 flex items-center justify-center" >
+              <GraduationCap size={20} className="text-white" />
+            </div>
             <div>
-              <h2 className="text-lg font-bold text-text-strong m-0">{title}</h2>
+              <h2 className="text-lg font-bold text-text-strong m-0">
+                {title}
+              </h2>
               <p className="text-xs text-muted m-0">Create or edit a course</p>
             </div>
           </div>
-          <button onClick={onClose} className="w-8 h-8 rounded-lg flex items-center justify-center text-muted hover:bg-bg-surface hover:text-text-strong transition-colors cursor-pointer border-none bg-transparent">
+          <Button
+            onClick={onClose}
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-muted hover:bg-bg-surface hover:text-text-strong transition-colors cursor-pointer border-none bg-transparent"
+          >
             <X size={18} />
-          </button>
+          </Button>
         </div>
 
         <CourseForm
@@ -33,4 +47,3 @@ export function CourseModal({ open, title = 'Add Course', initialValues = {}, on
     </div>
   );
 }
-
