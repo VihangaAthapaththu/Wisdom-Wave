@@ -6,6 +6,7 @@ import { PageHeader } from '@/components/molecules';
 import { useAuth } from "@/context";
 import { useCourses, useCreateCourse, useUpdateCourse, useDeleteCourse } from '@/hooks/courses/useCourses';
 import { CourseModal } from '@/components';
+import { ConfirmationModal } from '@/components';
 import { toast } from 'sonner';
 
 export function CourseManagement() {
@@ -15,19 +16,25 @@ export function CourseManagement() {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [fieldErrors, setFieldErrors] = useState([]);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const createCourse = useCreateCourse();
   const updateCourse = useUpdateCourse();
   const deleteCourse = useDeleteCourse();
 
-  const handleDelete = async (course) => {
-    if (!window.confirm('Are you sure you want to delete this course?')) return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await deleteCourse.mutateAsync(course._id || course.id);
+      setIsDeleting(true);
+      await deleteCourse.mutateAsync(deleteTarget._id || deleteTarget.id);
       toast.success('Course deleted');
+      setDeleteTarget(null);
     } catch (err) {
       const response = err?.response?.data;
       toast.error(response?.message || 'Failed to delete course');
       console.error('Failed to delete course:', err);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -68,7 +75,7 @@ export function CourseManagement() {
                   <TableCell className="text-[#666666] p-4">{course.duration ?? '—'}</TableCell>
                   <TableCell className="p-4">
                     <Button size="sm" className="bg-[#FFA500] text-white hover:bg-[#ff8c00] mr-2" onClick={() => { setSelectedCourse(course); setFieldErrors([]); setShowModal(true); }}>Edit</Button>
-                    <Button size="sm" variant="destructive" onClick={() => handleDelete(course)}>Delete</Button>
+                    <Button size="sm" variant="destructive" onClick={() => setDeleteTarget(course)}>Delete</Button>
                   </TableCell>
                 </TableRow>
               ))
@@ -108,6 +115,17 @@ export function CourseManagement() {
           }
         }}
         isSubmitting={isSaving}
+      />
+
+      <ConfirmationModal
+        open={!!deleteTarget}
+        title="Delete course?"
+        description={`This will permanently delete ${deleteTarget?.title || 'the selected course'}. This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Keep course"
+        onCancel={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        isConfirming={isDeleting}
       />
     </div>
   );

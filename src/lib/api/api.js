@@ -21,13 +21,12 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Only redirect if not already on auth pages
-      const currentPath = window.location.pathname;
-      const authPaths = ["/signin", "/signup"];
-
-      if (!authPaths.includes(currentPath)) {
-        window.location.href = "/signin";
-      }
+      // Don't perform a global redirect here. Let route guards (e.g. ProtectedRoute)
+      // or page-level logic decide when to navigate to the sign-in page. A
+      // global redirect breaks public routes like the landing page which call
+      // `getMe()` on load and may receive 401 before the router has settled.
+      // Optionally, apps can listen for this event: `window.dispatchEvent(new CustomEvent('api:unauthorized', { detail: error }))`
+      // and handle it centrally if desired.
     }
 
     return Promise.reject(error);

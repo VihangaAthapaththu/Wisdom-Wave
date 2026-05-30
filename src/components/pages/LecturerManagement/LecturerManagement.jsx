@@ -3,6 +3,7 @@ import { UserPlus, GraduationCap, X, Loader2, AlertCircle, CheckCircle2 } from '
 import { Button, Card, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components';
 import { PageHeader } from '@/components/molecules';
 import { useLecturers, useRegisterLecturer, useDeactivateLecturer } from '@/hooks/lecturers/useLecturers';
+import { ConfirmationModal } from '@/components';
 
 export function LecturerManagement() {
   const { data: lecturers = [], isLoading } = useLecturers();
@@ -17,6 +18,8 @@ export function LecturerManagement() {
   const [fieldErrors, setFieldErrors] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
+  const [deactivateTarget, setDeactivateTarget] = useState(null);
+  const [isDeactivating, setIsDeactivating] = useState(false);
 
   const registerLecturer = useRegisterLecturer();
   const deactivateLecturer = useDeactivateLecturer();
@@ -52,12 +55,16 @@ export function LecturerManagement() {
     }
   };
 
-  const handleDeactivate = async (lecturerId) => {
-    if (!window.confirm('Are you sure you want to deactivate this lecturer?')) return;
+  const handleDeactivate = async () => {
+    if (!deactivateTarget) return;
     try {
-      await deactivateLecturer.mutateAsync(lecturerId);
+      setIsDeactivating(true);
+      await deactivateLecturer.mutateAsync(deactivateTarget);
+      setDeactivateTarget(null);
     } catch (err) {
       console.error('Failed to deactivate lecturer:', err);
+    } finally {
+      setIsDeactivating(false);
     }
   };
 
@@ -135,7 +142,7 @@ export function LecturerManagement() {
                         <Button
                           size="sm"
                           variant="destructive"
-                          onClick={() => handleDeactivate(lecturer._id)}
+                          onClick={() => setDeactivateTarget(lecturer._id)}
                           className="text-xs"
                         >
                           Deactivate
@@ -282,6 +289,17 @@ export function LecturerManagement() {
           </Card>
         </div>
       )}
+
+      <ConfirmationModal
+        open={!!deactivateTarget}
+        title="Deactivate lecturer?"
+        description="This will mark the lecturer account as inactive. They will no longer be able to access lecturer features until reactivated."
+        confirmText="Deactivate"
+        cancelText="Keep active"
+        onCancel={() => setDeactivateTarget(null)}
+        onConfirm={handleDeactivate}
+        isConfirming={isDeactivating}
+      />
     </div>
   );
 }
