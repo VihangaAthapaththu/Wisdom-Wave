@@ -6,7 +6,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Geist Variable', 'Geist', 'Segoe UI', sans-serif;
   line-height: 1.6;
   font-weight: 400;
 
@@ -55,13 +55,13 @@
   --chart-5: oklch(0.269 0 0);
   --radius: 0.625rem;
   --bg-paper: #faf8f5;
-  --bg-surface: #f5f5f5;
-  --border-light: #ede9e3;
-  --text: #1a1714;
-  --text-strong: #1a1a1a;
-  --danger: #e53e3e;
-  --success: #38a169;
-  --warn: #dd6b20;
+  --bg-surface: #f7f3ec;
+  --border-light: #efe8dc;
+  --text: #0f172a;
+  --text-strong: #111827;
+  --danger: #ef4444;
+  --success: #22c55e;
+  --warn: #f59e0b;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -70,6 +70,58 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  color: var(--foreground);
+  background:
+    radial-gradient(circle at top, rgba(245, 158, 11, 0.08), transparent 35%),
+    linear-gradient(180deg, #fffdf9 0%, #faf8f5 45%, #f5efe6 100%);
+}
+
+body.dark {
+  background:
+    radial-gradient(circle at top, rgba(251, 191, 36, 0.12), transparent 35%),
+    linear-gradient(180deg, #111827 0%, #0f172a 55%, #020617 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: rgba(245, 158, 11, 0.25);
+  color: #111827;
+}
+
+:focus-visible {
+  outline: 3px solid rgba(245, 158, 11, 0.45);
+  outline-offset: 2px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.04);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.75);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(245, 158, 11, 0.85);
 }
 
 @theme inline {

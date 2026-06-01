@@ -1,3 +1,5 @@
+import { tokens } from "./src/theme/tokens.js";
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -7,72 +9,55 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Brand
-        primary: {
-          DEFAULT: '#FFA500',
-          600: '#ff8c00',
-          700: '#ff9500',
-        },
+        primary: tokens.colors.brand,
         secondary: {
-          DEFAULT: '#2563eb',
+          DEFAULT: "#2563eb",
         },
-
-        // Neutrals & surfaces
         bg: {
-          DEFAULT: '#ffffff',
-          paper: '#faf8f5',
-          surface: '#f5f5f5',
+          DEFAULT: tokens.semanticTheme?.light?.surface || "#ffffff",
+          paper: tokens.semanticTheme?.light?.background || "#faf8f5",
+          surface: tokens.semanticTheme?.light?.surfaceAlt || "#f7f3ec",
         },
         border: {
-          DEFAULT: '#e0e0e0',
-          light: '#ede9e3',
+          DEFAULT: tokens.semanticTheme?.light?.border || "#e7dfd0",
+          light: "#efe8dc",
         },
         muted: {
-          DEFAULT: '#666666',
-          hint: '#9e9890',
+          DEFAULT: "#5b6472",
+          hint: "#94a3b8",
         },
         text: {
-          DEFAULT: '#1a1714',
-          strong: '#1a1a1a',
+          DEFAULT: tokens.semanticTheme?.light?.text || "#0f172a",
+          strong: "#111827",
         },
-
-        // Status
-        danger: '#e53e3e',
-        success: '#38a169',
+        danger: tokens.colors.danger[500],
+        success: tokens.colors.success[500],
         warn: {
-          DEFAULT: '#dd6b20',
-          alt: '#d69e2e',
+          DEFAULT: tokens.colors.warning[500],
+          alt: tokens.colors.warning[600],
         },
       },
       fontFamily: {
-        sans: ["Outfit", "Plus Jakarta Sans", "Segoe UI", "Tahoma", "Geneva", "Verdana", "sans-serif"],
+        sans: tokens.typography.fontFamily.sans,
       },
       fontSize: {
-        // Titles
-        'title-1': ['2.375rem', { lineHeight: '1.18' }], // 38px
-        'title-2': ['1.875rem', { lineHeight: '1.15' }], // 30px
-        'title-3': ['1.25rem', { lineHeight: '1.2' }], // 20px
-
-        // Subtitles
-        'subtitle-lg': ['1rem', { lineHeight: '1.6' }], // 16px
-        'subtitle-sm': ['0.875rem', { lineHeight: '1.5' }], // 14px
-
-        // Body
-        'body-lg': ['1rem', { lineHeight: '1.7' }], // 16px
-        'body-md': ['0.9375rem', { lineHeight: '1.6' }], // 15px
-        'body-sm': ['0.875rem', { lineHeight: '1.6' }], // 14px
-        'body-xs': ['0.75rem', { lineHeight: '1.4' }], // 12px
+        ...tokens.typography.scale,
       },
       fontWeight: {
-        regular: '400',
-        medium: '500',
-        semibold: '600',
-        bold: '700',
-        extrabold: '800',
+        regular: "400",
+        medium: "500",
+        semibold: "600",
+        bold: "700",
+        extrabold: "800",
       },
       boxShadow: {
-        'brand-md': '0 8px 24px rgba(255,165,0,0.08)',
+        "brand-md": tokens.shadows.brand,
+        soft: tokens.shadows.soft,
+        card: tokens.shadows.card,
+        elevated: tokens.shadows.elevated,
       },
+      borderRadius: tokens.radius,
+      spacing: tokens.spacing,
     },
   },
   plugins: [],

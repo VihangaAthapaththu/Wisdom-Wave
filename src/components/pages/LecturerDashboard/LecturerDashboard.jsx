@@ -54,7 +54,7 @@ export function LecturerDashboard() {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between md:items-center mb-[30px] lg:mb-[50px] flex-wrap gap-5">
         <div>
-          <h1 className="text-[22px] md:text-[28px] lg:text-[40px] font-bold text-[#1a1a1a] mb-2.5 bg-gradient-to-br from-primary to-primary-600 bg-clip-text text-transparent m-0">
+          <h1 className="text-[22px] md:text-[28px] lg:text-[40px] font-bold text-text-strong mb-2.5 bg-gradient-to-br from-primary to-primary-600 bg-clip-text text-transparent m-0">
             Lecturer Dashboard
           </h1>
           <p className="text-base text-muted m-0">
@@ -67,7 +67,7 @@ export function LecturerDashboard() {
           </p>
         </div>
         <div className="flex gap-[15px] items-center w-full md:w-auto">
-          <button className="w-11 h-11 rounded-[10px] bg-white border-2 border-border text-[#1a1a1a] flex items-center justify-center transition-all duration-300 hover:border-primary hover:text-primary cursor-pointer">
+          <button className="w-11 h-11 rounded-[10px] bg-white border-2 border-border text-text-strong flex items-center justify-center transition-all duration-300 hover:border-primary hover:text-primary cursor-pointer">
             <Settings size={20} />
           </button>
           <button
@@ -89,7 +89,7 @@ export function LecturerDashboard() {
 
       {/* Menu Grid */}
       <div className="mb-[50px]">
-        <h2 className="text-[20px] md:text-[24px] font-bold text-[#1a1a1a] m-0 mb-5 lg:mb-[30px]">
+        <h2 className="text-[20px] md:text-[24px] font-bold text-text-strong m-0 mb-5 lg:mb-[30px]">
           Quick Access
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
@@ -116,7 +116,7 @@ export function LecturerDashboard() {
 
       {/* My Courses */}
       <div className="mb-[50px]">
-        <h2 className="text-[20px] md:text-[24px] font-bold text-[#1a1a1a] m-0 mb-5 lg:mb-[30px]">
+        <h2 className="text-[20px] md:text-[24px] font-bold text-text-strong m-0 mb-5 lg:mb-[30px]">
           My Courses
         </h2>
           <LecturerCoursesList courses={courses} />

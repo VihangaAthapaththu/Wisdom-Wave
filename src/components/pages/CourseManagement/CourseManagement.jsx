@@ -102,7 +102,7 @@ export function CourseManagement() {
                     <TableRow>
                       <TableCell
                         colSpan={5}
-                        className="text-center text-[#666666] py-12"
+                        className="text-center text-muted py-12"
                       >
                         No courses found.
                       </TableCell>

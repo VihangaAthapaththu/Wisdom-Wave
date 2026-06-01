@@ -11,29 +11,33 @@ export function BlogManagement() {
   ];
 
   return (
-    <div className="bg-[#faf8f5] min-h-screen p-4 md:p-6 lg:p-10 flex flex-col">
+    <div className="bg-bg-paper min-h-screen p-4 md:p-6 lg:p-10 flex flex-col">
       <PageHeader title="Blog Management" buttonText="New Post" />
 
       <div className="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.1)] overflow-hidden overflow-x-auto">
         <Table className="min-w-full">
-          <TableHeader className="bg-[#f5f5f5] border-b-2 border-[#FFA500]">
+          <TableHeader className="bg-bg-surface border-b-2 border-primary">
             <TableRow>
-              <TableHead className="font-bold text-[#1a1a1a] p-4">Title</TableHead>
-              <TableHead className="font-bold text-[#1a1a1a] p-4">Author</TableHead>
-              <TableHead className="font-bold text-[#1a1a1a] p-4">Date</TableHead>
-              <TableHead className="font-bold text-[#1a1a1a] p-4">Status</TableHead>
-              <TableHead className="font-bold text-[#1a1a1a] p-4">Actions</TableHead>
+              <TableHead className="font-bold text-text-strong p-4">Title</TableHead>
+              <TableHead className="font-bold text-text-strong p-4">Author</TableHead>
+              <TableHead className="font-bold text-text-strong p-4">Date</TableHead>
+              <TableHead className="font-bold text-text-strong p-4">Status</TableHead>
+              <TableHead className="font-bold text-text-strong p-4">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {blogs.map((blog) => (
-              <TableRow key={blog.id} className="hover:bg-[#f5f5f5] border-b border-[#e0e0e0]">
-                <TableCell className="text-muted p-4"><FileText size={16} className="inline mr-2" />{blog.title}</TableCell>
+              <TableRow key={blog.id} className="hover:bg-bg-surface border-b border-border">
+                <TableCell className="text-text-strong p-4 font-medium"><FileText size={16} className="inline mr-2 text-primary" />{blog.title}</TableCell>
                 <TableCell className="text-muted p-4">{blog.author}</TableCell>
-                <TableCell className="text-muted p-4">{blog.date}</TableCell>
-                <TableCell className="text-muted p-4">{blog.status}</TableCell>
+                <TableCell className="text-muted p-4 text-sm">{blog.date}</TableCell>
                 <TableCell className="p-4">
-                  <Button size="sm" className="bg-[#FFA500] text-white hover:bg-[#ff8c00] mr-2">Edit</Button>
+                  <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
+                    blog.status === 'Published' ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'
+                  }`}>{blog.status}</span>
+                </TableCell>
+                <TableCell className="p-4 flex gap-2">
+                  <Button size="sm" variant="outline">Edit</Button>
                   <Button size="sm" variant="destructive">Delete</Button>
                 </TableCell>
               </TableRow>

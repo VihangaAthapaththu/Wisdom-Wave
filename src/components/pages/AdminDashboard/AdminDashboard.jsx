@@ -1,12 +1,14 @@
 import React from 'react';
-import { Users, BookOpen, FileText, BarChart3, Settings, LogOut, GraduationCap } from 'lucide-react';
+import { Users, BookOpen, FileText, BarChart3, Settings, LogOut, GraduationCap, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from "@/context";
 import { StatCard, MenuCard } from '@/components/molecules';
+import { useAdminStats } from '@/hooks';
 
 export function AdminDashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { data: stats, isLoading: statsLoading } = useAdminStats();
 
   const handleLogout = async () => {
     try {
@@ -17,11 +19,11 @@ export function AdminDashboard() {
     }
   };
 
-  const stats = [
-    { icon: Users, label: 'Total Students', value: '1,234' },
-    { icon: BookOpen, label: 'Active Courses', value: '28' },
-    { icon: FileText, label: 'Course Materials', value: '156' },
-    { icon: BarChart3, label: 'Enrollments', value: '5,678' },
+  const statCards = [
+    { icon: Users, label: 'Total Students', value: statsLoading ? '—' : (stats?.totalStudents ?? 0).toLocaleString() },
+    { icon: BookOpen, label: 'Published Courses', value: statsLoading ? '—' : (stats?.publishedCourses ?? 0).toLocaleString() },
+    { icon: FileText, label: 'Total Enrollments', value: statsLoading ? '—' : (stats?.totalEnrollments ?? 0).toLocaleString() },
+    { icon: BarChart3, label: 'Revenue', value: statsLoading ? '—' : `$${(stats?.totalRevenue ?? 0).toLocaleString()}` },
   ];
 
   return (
@@ -49,7 +51,7 @@ export function AdminDashboard() {
 
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5 mb-8 lg:mb-10">
-          {stats.map((stat, index) => (
+          {statCards.map((stat, index) => (
             <StatCard key={index} {...stat} />
           ))}
         </div>

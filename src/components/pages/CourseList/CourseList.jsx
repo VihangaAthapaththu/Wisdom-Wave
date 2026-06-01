@@ -1,21 +1,45 @@
 import React from 'react';
 import { Search, Code2, Smartphone, Network, Globe, Sparkles, BarChart3 } from 'lucide-react';
 import { CourseCard } from '@/components/molecules';
+import { useCourses } from '@/hooks';
+
+const ICONS = [Code2, Smartphone, Network, Globe, Sparkles, BarChart3];
+
+function formatDuration(duration) {
+  if (duration == null || duration === '') return 'TBD';
+  const value = Number(duration);
+  if (Number.isNaN(value)) return String(duration);
+  return value === 1 ? '1 hour' : `${value} hours`;
+}
+
+function getCourseLevel(course, index) {
+  if (course?.level) return course.level;
+  const duration = Number(course?.duration);
+  if (!Number.isNaN(duration)) {
+    if (duration <= 4) return 'Beginner';
+    if (duration <= 8) return 'Intermediate';
+    return 'Advanced';
+  }
+  return ['Beginner', 'Intermediate', 'Advanced'][index % 3];
+}
 
 export function CourseList() {
   const [searchTerm, setSearchTerm] = React.useState('');
   const [selectedLevel, setSelectedLevel] = React.useState('all');
+  const { data: courses = [], isLoading, isError } = useCourses(true);
 
-  const courses = [
-    { id: 1, title: 'Introduction to Python', level: 'Beginner', duration: '4 weeks', students: 1200, icon: Code2, description: 'Learn Python basics and build your first projects' },
-    { id: 2, title: 'React Native', level: 'Intermediate', duration: '6 weeks', students: 2500, icon: Smartphone, description: 'Build mobile apps with React and JavaScript' },
-    { id: 3, title: 'Networking with Java', level: 'Advanced', duration: '8 weeks', students: 3100, icon: Network, description: 'Master networking concepts with Java programming' },
-    { id: 4, title: 'Web Development Basics', level: 'Beginner', duration: '5 weeks', students: 1800, icon: Globe, description: 'Learn HTML, CSS, and JavaScript for web development' },
-    { id: 5, title: 'Advanced JavaScript', level: 'Advanced', duration: '7 weeks', students: 950, icon: Sparkles, description: 'Deep dive into JavaScript ES6+ and modern patterns' },
-    { id: 6, title: 'Data Science Fundamentals', level: 'Intermediate', duration: '6 weeks', students: 2100, icon: BarChart3, description: 'Introduction to data analysis and visualization' },
-  ];
+  const mappedCourses = courses.map((course, index) => ({
+    id: course._id || course.id || index,
+    title: course.title || 'Untitled course',
+    level: getCourseLevel(course, index),
+    duration: formatDuration(course.duration),
+    students: course.enrolledCount || course.students || 'Open',
+    icon: ICONS[index % ICONS.length],
+    description: course.description || 'Course details will be added soon.',
+    isPublished: course.isPublished,
+  }));
 
-  const filteredCourses = courses.filter(course => {
+  const filteredCourses = mappedCourses.filter(course => {
     const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesLevel = selectedLevel === 'all' || course.level === selectedLevel;
     return matchesSearch && matchesLevel;
@@ -63,13 +87,23 @@ export function CourseList() {
         </div>
 
         {/* Course Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          {filteredCourses.map((course) => (
-            <CourseCard key={course.id} course={course} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="rounded-2xl border border-border bg-white px-6 py-10 text-center text-sm text-muted shadow-sm">
+            Loading courses...
+          </div>
+        ) : isError ? (
+          <div className="rounded-2xl border border-danger/20 bg-danger/5 px-6 py-10 text-center text-sm text-danger">
+            We could not load the course catalog right now.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            {filteredCourses.map((course) => (
+              <CourseCard key={course.id} course={course} />
+            ))}
+          </div>
+        )}
 
-        {filteredCourses.length === 0 && (
+        {!isLoading && !isError && filteredCourses.length === 0 && (
           <div className="text-center py-16 text-gray-400">
             <Search className="w-12 h-12 mx-auto mb-3 opacity-40" />
             <p className="text-lg font-medium">No courses found</p>

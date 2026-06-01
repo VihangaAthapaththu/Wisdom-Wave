@@ -5,7 +5,7 @@ import { Plus } from 'lucide-react';
 export function PageHeader({ title, buttonText, onButtonClick, icon: Icon = Plus }) {
   return (
     <div className="flex flex-col md:flex-row justify-between md:items-center mb-10 gap-5">
-      <h1 className="text-2xl md:text-3xl lg:text-[32px] font-bold text-[#1a1a1a] m-0 bg-gradient-to-br from-primary to-primary-600 bg-clip-text text-transparent">
+      <h1 className="text-2xl md:text-3xl lg:text-[32px] font-bold text-text-strong m-0 bg-gradient-to-br from-primary to-primary-600 bg-clip-text text-transparent">
         {title}
       </h1>
       {buttonText && (

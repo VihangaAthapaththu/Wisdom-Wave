@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { UserPlus, GraduationCap, X, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { UserPlus, GraduationCap, X, Loader2, AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button, Card, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components';
 import { PageHeader } from '@/components/molecules';
 import { useLecturers, useRegisterLecturer, useDeactivateLecturer } from '@/hooks/lecturers/useLecturers';
@@ -17,7 +18,6 @@ export function LecturerManagement() {
   const [formError, setFormError] = useState('');
   const [fieldErrors, setFieldErrors] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [successMsg, setSuccessMsg] = useState('');
   const [deactivateTarget, setDeactivateTarget] = useState(null);
   const [isDeactivating, setIsDeactivating] = useState(false);
 
@@ -38,11 +38,10 @@ export function LecturerManagement() {
     setIsSubmitting(true);
 
     try {
-      const resp = await registerLecturer.mutateAsync(formData);
-      setSuccessMsg('Lecturer registered successfully!');
+      await registerLecturer.mutateAsync(formData);
+      toast.success('Lecturer registered successfully!');
       setFormData({ name: '', email: '', password: '', specialization: '' });
       setShowModal(false);
-      setTimeout(() => setSuccessMsg(''), 4000);
     } catch (err) {
       const response = err.response?.data;
       if (response?.errors) {
@@ -60,9 +59,10 @@ export function LecturerManagement() {
     try {
       setIsDeactivating(true);
       await deactivateLecturer.mutateAsync(deactivateTarget);
+      toast.success('Lecturer deactivated.');
       setDeactivateTarget(null);
     } catch (err) {
-      console.error('Failed to deactivate lecturer:', err);
+      toast.error(err?.response?.data?.message || 'Failed to deactivate lecturer.');
     } finally {
       setIsDeactivating(false);
     }
@@ -75,14 +75,6 @@ export function LecturerManagement() {
         buttonText="Register Lecturer"
         onButtonClick={() => setShowModal(true)}
       />
-
-      {/* Success Toast */}
-      {successMsg && (
-        <div className="mb-6 flex items-center gap-3 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl text-sm font-medium animate-in fade-in slide-in-from-top-2 duration-300">
-          <CheckCircle2 size={18} />
-          {successMsg}
-        </div>
-      )}
 
       {/* Loading State */}
       {isLoading ? (

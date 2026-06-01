@@ -1,4 +1,4 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -7,33 +7,44 @@ import {
 } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/context";
-import {
-  ProtectedRoute,
-  LandingPage,
-  SignIn,
-  SignUp,
-  Contact,
-  AdminDashboard,
-  StudentDashboard,
-  CourseManagement,
-  CourseMaterialManagement,
-  CourseList,
-  CoursePage,
-  LessonPage,
-  BlogManagement,
-  BlogStudent,
-  StudentManagement,
-  StudentEnrollments,
-  MessagePortal,
-  ReportManagement,
-  Notification,
-  LecturerDashboard,
-  LecturerManagement,
-  ClientNavbar,
-} from "@/components";
+import { ProtectedRoute } from "@/components";
+import { ClientNavbar } from "@/components";
+import { PageLoader } from "@/components";
+
+// Code-split all pages — only load the bundle when the route is visited
+const LandingPage              = lazy(() => import("@/components/pages/LandingPage").then(m => ({ default: m.LandingPage })));
+const SignIn                   = lazy(() => import("@/components/pages/SignIn").then(m => ({ default: m.SignIn })));
+const SignUp                   = lazy(() => import("@/components/pages/SignUp").then(m => ({ default: m.SignUp })));
+const Contact                  = lazy(() => import("@/components/pages/Contact").then(m => ({ default: m.Contact })));
+const AdminDashboard           = lazy(() => import("@/components/pages/AdminDashboard").then(m => ({ default: m.AdminDashboard })));
+const StudentDashboard         = lazy(() => import("@/components/pages/StudentDashboard").then(m => ({ default: m.StudentDashboard })));
+const CourseManagement         = lazy(() => import("@/components/pages/CourseManagement").then(m => ({ default: m.CourseManagement })));
+const CourseMaterialManagement = lazy(() => import("@/components/pages/CourseMaterialManagement").then(m => ({ default: m.CourseMaterialManagement })));
+const CourseList               = lazy(() => import("@/components/pages/CourseList").then(m => ({ default: m.CourseList })));
+const CoursePage               = lazy(() => import("@/components/pages/CoursePage").then(m => ({ default: m.CoursePage })));
+const LessonPage               = lazy(() => import("@/components/pages/LessonPage").then(m => ({ default: m.LessonPage })));
+const BlogManagement           = lazy(() => import("@/components/pages/BlogManagement").then(m => ({ default: m.BlogManagement })));
+const BlogStudent              = lazy(() => import("@/components/pages/BlogStudent").then(m => ({ default: m.BlogStudent })));
+const StudentManagement        = lazy(() => import("@/components/pages/StudentManagement").then(m => ({ default: m.StudentManagement })));
+const StudentEnrollments       = lazy(() => import("@/components/pages/StudentEnrollments").then(m => ({ default: m.StudentEnrollments })));
+const MessagePortal            = lazy(() => import("@/components/pages/MessagePortal").then(m => ({ default: m.MessagePortal })));
+const ReportManagement         = lazy(() => import("@/components/pages/ReportManagement").then(m => ({ default: m.ReportManagement })));
+const Notification             = lazy(() => import("@/components/pages/Notification").then(m => ({ default: m.Notification })));
+const LecturerDashboard        = lazy(() => import("@/components/pages/LecturerDashboard").then(m => ({ default: m.LecturerDashboard })));
+const LecturerManagement       = lazy(() => import("@/components/pages/LecturerManagement").then(m => ({ default: m.LecturerManagement })));
 import "./App.css";
 import { Toaster } from "sonner";
 import "sonner/dist/styles.css";
+
+// Instantiated outside App() to prevent recreation on every render
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60 * 1000, // 1 minute default
+      retry: 1,
+    },
+  },
+});
 
 function ClientLayout() {
   return (
@@ -47,11 +58,11 @@ function ClientLayout() {
 }
 
 function App() {
-  const queryClient = new QueryClient();
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <Router>
+          <Suspense fallback={<PageLoader size={300} fullScreen={true} />}>
           <Routes>
             {/* Public routes with client navbar */}
 
@@ -122,6 +133,7 @@ function App() {
               />
             </Route>
           </Routes>
+          </Suspense>
           <Toaster position="bottom-right" />
         </Router>
       </AuthProvider>

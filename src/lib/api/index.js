@@ -1,3 +1,9 @@
 export { authService } from "./authService";
 export { courseService } from "./courseService";
 export { lecturerService } from "./lecturerService";
+export { studentService } from "./studentService";
+export { enrollmentService } from "./enrollmentService";
+export { paymentService } from "./paymentService";
+export { assignmentService } from "./assignmentService";
+export { materialService } from "./materialService";
+export { adminService } from "./adminService";
