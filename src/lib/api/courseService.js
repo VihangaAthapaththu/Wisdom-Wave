@@ -2,7 +2,7 @@ import api from "./api";
 
 export const courseService = {
   async getAll() {
-    const response = await api.get("/courses");
+    const response = await api.get("/courses/all");
     return response.data;
   },
 
