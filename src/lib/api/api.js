@@ -8,10 +8,30 @@ import axios from "axios";
 const api = axios.create({
   baseURL: "/api",
   withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
+
+/**
+ * Request interceptor — set Content-Type only when appropriate.
+ * - When sending `FormData`, delete Content-Type so the browser sets the boundary.
+ * - Otherwise ensure `application/json`.
+ */
+api.interceptors.request.use(
+  (config) => {
+    if (config && config.data instanceof FormData) {
+      if (config.headers) {
+        delete config.headers["Content-Type"];
+        delete config.headers["content-type"];
+      }
+    } else {
+      config.headers = config.headers || {};
+      if (!config.headers["Content-Type"] && !config.headers["content-type"]) {
+        config.headers["Content-Type"] = "application/json";
+      }
+    }
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
 
 /**
  * Response interceptor — handles 401 errors globally.

@@ -2,6 +2,7 @@ import React from 'react';
 import { Search, Code2, Smartphone, Network, Globe, Sparkles, BarChart3 } from 'lucide-react';
 import { CourseCard } from '@/components/molecules';
 import { useCourses } from '@/hooks';
+import { useAuth } from '@/context';
 
 const ICONS = [Code2, Smartphone, Network, Globe, Sparkles, BarChart3];
 
@@ -26,7 +27,13 @@ function getCourseLevel(course, index) {
 export function CourseList() {
   const [searchTerm, setSearchTerm] = React.useState('');
   const [selectedLevel, setSelectedLevel] = React.useState('all');
-  const { data: courses = [], isLoading, isError } = useCourses(true);
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'ADMIN';
+  const { data: courses = [], isLoading, isError } = useCourses(
+    isAdmin,
+    undefined,
+    { published: true },
+  );
 
   const mappedCourses = courses.map((course, index) => ({
     id: course._id || course.id || index,
@@ -36,6 +43,7 @@ export function CourseList() {
     students: course.enrolledCount || course.students || 'Open',
     icon: ICONS[index % ICONS.length],
     description: course.description || 'Course details will be added soon.',
+    fee: course.fee,
     isPublished: course.isPublished,
   }));
 

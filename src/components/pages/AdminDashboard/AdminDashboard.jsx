@@ -64,9 +64,9 @@ export function AdminDashboard() {
             <MenuCard href="/dashboard/students" icon={Users} title="Student Management" description="Manage student accounts" />
             <MenuCard href="/dashboard/lecturers" icon={GraduationCap} title="Lecturer Management" description="Register and manage lecturers" />
             <MenuCard href="/dashboard/students/enrollments" icon={FileText} title="Enrollments" description="Track student enrollments" />
+            <MenuCard href="/dashboard/payments" icon={BarChart3} title="Payments" description="View all student payments" />
             <MenuCard href="/dashboard/blog" icon={FileText} title="Blog Management" description="Create and manage blog posts" />
             <MenuCard href="/dashboard/reports" icon={BarChart3} title="Reports" description="View analytics and reports" />
-            <MenuCard href="/dashboard/courses/1/materials" icon={BookOpen} title="Course Materials" description="Manage course materials" />
           </div>
         </div>
       </div>

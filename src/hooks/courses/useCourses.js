@@ -12,13 +12,18 @@ function _extractCourses(resp) {
   return [];
 }
 
-export function useCourses(fetchAll = false, initialData) {
+export function useCourses(fetchAll = false, initialData, opts = {}) {
+  // fetchAll: boolean (true => all)
+  // opts.published: boolean (true => published list)
+  const mode = fetchAll ? "all" : opts?.published ? "published" : "mine";
+
   return useQuery({
-    queryKey: ["courses", fetchAll ? "all" : "mine"],
+    queryKey: ["courses", mode],
     queryFn: async () => {
-      const resp = fetchAll
-        ? await courseService.getAll()
-        : await courseService.getMyCourses();
+      let resp;
+      if (mode === "all") resp = await courseService.getAll();
+      else if (mode === "published") resp = await courseService.getPublished();
+      else resp = await courseService.getMyCourses();
       return _extractCourses(resp);
     },
     initialData,
@@ -30,7 +35,7 @@ export function useCourse(id, initialData) {
     queryKey: ["courses", id],
     queryFn: async () => {
       const resp = await courseService.getById(id);
-      return resp?.data || resp || null;
+      return resp?.data?.course || resp?.course || resp?.data || resp || null;
     },
     initialData,
     enabled: !!id,

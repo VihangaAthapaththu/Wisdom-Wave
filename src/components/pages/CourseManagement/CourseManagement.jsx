@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { BookOpen, Edit, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { BookOpen, Edit, Trash2, Eye } from "lucide-react";
 import {
   Button,
   Table,
@@ -24,6 +25,7 @@ import { toast } from "sonner";
 
 export function CourseManagement() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { data: courses = [], isLoading } = useCourses(
     user && user.role === "ADMIN",
   );
@@ -127,6 +129,15 @@ export function CourseManagement() {
                           {course.duration ?? "—"}
                         </TableCell>
                         <TableCell className="p-4">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="mr-2"
+                            onClick={() => navigate(`/courses/${course._id || course.id}`)}
+                            title="View course"
+                          >
+                            <Eye size={16} />
+                          </Button>
                           <Button
                             size="sm"
                             className="mr-2"

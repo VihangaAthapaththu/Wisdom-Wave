@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { studentService } from "@/lib";
+import { useAuth } from "@/context";
 
 function _extractStudents(resp) {
   if (!resp) return [];
@@ -24,12 +25,14 @@ export function useStudents(initialData) {
 }
 
 export function useMyStudent(initialData) {
+  const { user } = useAuth();
   return useQuery({
     queryKey: ["student", "me"],
     queryFn: async () => {
       const resp = await studentService.getMyProfile();
       return resp?.data?.student || resp?.student || resp?.data || resp;
     },
+    enabled: user?.role === "STUDENT",
     initialData,
   });
 }

@@ -1,5 +1,5 @@
-import React from 'react';
-import { BookOpen, CheckCircle, Loader2 } from 'lucide-react';
+import { useState } from 'react';
+import { BookOpen, CheckCircle, Loader2, UserPlus, X, AlertCircle } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -7,12 +7,23 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  Button,
 } from '@/components';
 import { PageHeader } from '@/components/molecules';
 import { useStudents } from '@/hooks';
+import { useAdminEnrollStudent } from '@/hooks';
+import { useCourses } from '@/hooks';
+import { toast } from 'sonner';
 
 export function StudentEnrollments() {
   const { data: students = [], isLoading } = useStudents();
+  const { data: courses = [], isLoading: coursesLoading } = useCourses(true);
+  const adminEnroll = useAdminEnrollStudent();
+
+  const [showModal, setShowModal] = useState(false);
+  const [form, setForm] = useState({ studentId: '', courseId: '' });
+  const [formError, setFormError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Flatten: one row per (student, enrolledCourse) pair
   const rows = students.flatMap((student) =>
@@ -25,9 +36,42 @@ export function StudentEnrollments() {
     }))
   );
 
+  const openModal = () => {
+    setForm({ studentId: '', courseId: '' });
+    setFormError('');
+    setShowModal(true);
+  };
+
+  const handleEnroll = async (e) => {
+    e.preventDefault();
+    if (!form.studentId || !form.courseId) {
+      setFormError('Please select both a student and a course.');
+      return;
+    }
+    try {
+      setIsSubmitting(true);
+      await adminEnroll.mutateAsync({ courseId: form.courseId, studentId: form.studentId });
+      toast.success('Student enrolled successfully.');
+      setShowModal(false);
+    } catch (err) {
+      setFormError(err?.response?.data?.message || 'Failed to enroll student.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="bg-bg-paper min-h-screen p-4 md:p-6 lg:p-10 flex flex-col">
       <PageHeader title="Student Enrollments" />
+
+      <div className="flex justify-end mb-4">
+        <Button
+          onClick={openModal}
+          className="flex items-center gap-2 bg-gradient-to-r from-primary to-primary-600 text-white px-4 py-2.5 rounded-xl font-semibold text-sm shadow-md hover:shadow-lg transition-all"
+        >
+          <UserPlus size={15} /> Manually Enroll Student
+        </Button>
+      </div>
 
       {isLoading ? (
         <div className="flex-1 flex items-center justify-center">
@@ -68,6 +112,80 @@ export function StudentEnrollments() {
               )}
             </TableBody>
           </Table>
+        </div>
+      )}
+
+      {/* Manually Enroll Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+              <div>
+                <h2 className="text-base font-bold text-gray-900">Manually Enroll Student</h2>
+                <p className="text-xs text-gray-400 mt-0.5">Enroll a student in a course without payment.</p>
+              </div>
+              <button
+                onClick={() => setShowModal(false)}
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 transition-colors border-none bg-transparent cursor-pointer"
+              >
+                <X size={17} />
+              </button>
+            </div>
+            <form onSubmit={handleEnroll} className="p-6 flex flex-col gap-4">
+              {formError && (
+                <div className="flex items-start gap-2 bg-red-50 border border-red-100 text-red-600 px-3 py-2.5 rounded-lg text-sm">
+                  <AlertCircle size={15} className="shrink-0 mt-0.5" /> {formError}
+                </div>
+              )}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-gray-700">Student *</label>
+                <select
+                  value={form.studentId}
+                  onChange={(e) => setForm((f) => ({ ...f, studentId: e.target.value }))}
+                  className="w-full px-3.5 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors bg-white"
+                >
+                  <option value="">— Select student —</option>
+                  {students.map((s) => (
+                    <option key={s._id} value={s._id}>
+                      {s.user?.name || s._id} {s.user?.email ? `(${s.user.email})` : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-gray-700">Course *</label>
+                <select
+                  value={form.courseId}
+                  onChange={(e) => setForm((f) => ({ ...f, courseId: e.target.value }))}
+                  className="w-full px-3.5 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors bg-white"
+                  disabled={coursesLoading}
+                >
+                  <option value="">— Select course —</option>
+                  {courses.map((c) => (
+                    <option key={c._id} value={c._id}>
+                      {c.title} {c.fee > 0 ? `($${c.fee})` : '(Free)'}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex justify-end gap-3 pt-1">
+                <Button type="button" variant="outline" onClick={() => setShowModal(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="bg-gradient-to-r from-primary to-primary-600 text-white px-5"
+                >
+                  {isSubmitting ? (
+                    <><Loader2 size={14} className="animate-spin" /> Enrolling...</>
+                  ) : (
+                    'Enroll Student'
+                  )}
+                </Button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>

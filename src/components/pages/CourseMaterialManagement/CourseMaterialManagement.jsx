@@ -15,6 +15,7 @@ export function CourseMaterialManagement() {
 
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ title: '', fileUrl: '' });
+  const [file, setFile] = useState(null);
   const [formError, setFormError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -22,15 +23,27 @@ export function CourseMaterialManagement() {
 
   const handleAdd = async (e) => {
     e.preventDefault();
-    if (!form.title.trim() || !form.fileUrl.trim()) {
-      setFormError('Title and URL are required.');
+    if (!form.title.trim() || (!form.fileUrl.trim() && !file)) {
+      setFormError('Title and URL or file are required.');
       return;
     }
     try {
       setIsSubmitting(true);
-      await addMaterial.mutateAsync({ courseId, data: form });
+
+      let dataToSend;
+      if (file) {
+        const fd = new FormData();
+        fd.append('title', form.title);
+        fd.append('file', file);
+        dataToSend = fd;
+      } else {
+        dataToSend = { title: form.title, fileUrl: form.fileUrl };
+      }
+
+      await addMaterial.mutateAsync({ courseId, data: dataToSend });
       toast.success('Material added.');
       setForm({ title: '', fileUrl: '' });
+      setFile(null);
       setShowModal(false);
     } catch (err) {
       setFormError(err?.response?.data?.message || 'Failed to add material.');
@@ -152,6 +165,17 @@ export function CourseMaterialManagement() {
                   className="w-full px-3.5 py-2.5 border-2 border-border rounded-lg text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
                 />
               </div>
+
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-text-strong">Upload file (optional)</label>
+                <input
+                  type="file"
+                  onChange={(e) => setFile(e.target.files?.[0] || null)}
+                  className="w-full text-sm"
+                />
+                <p className="text-xs text-muted">Or provide a publicly accessible URL below.</p>
+              </div>
+
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-semibold text-text-strong">File URL</label>
                 <input
@@ -161,6 +185,7 @@ export function CourseMaterialManagement() {
                   className="w-full px-3.5 py-2.5 border-2 border-border rounded-lg text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
                 />
               </div>
+
               <div className="flex justify-end gap-3 pt-2">
                 <Button type="button" variant="outline" onClick={() => setShowModal(false)}>Cancel</Button>
                 <Button type="submit" disabled={isSubmitting}>

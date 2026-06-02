@@ -34,9 +34,11 @@ export function LecturerDashboard() {
     }
   };
 
+  const totalEnrolled = courses.reduce((sum, c) => sum + (c.enrollmentCount || 0), 0);
+
   const stats = [
     { icon: BookOpen, label: "My Courses", value: String(courses.length) },
-    { icon: Users, label: "Enrolled Students", value: "—" },
+    { icon: Users, label: "Enrolled Students", value: String(totalEnrolled) },
     { icon: FileText, label: "Materials Uploaded", value: "—" },
     { icon: CheckSquare, label: "Assignments Graded", value: "—" },
   ];

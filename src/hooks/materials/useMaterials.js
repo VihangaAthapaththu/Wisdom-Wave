@@ -19,6 +19,9 @@ export function useAddMaterial() {
     onSettled: (_, __, { courseId }) => {
       qc.invalidateQueries({ queryKey: ["materials", courseId] });
     },
+    onError: (err) => {
+      console.error("Failed to add material:", err);
+    }
   });
 }
 

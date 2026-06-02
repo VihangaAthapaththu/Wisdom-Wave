@@ -6,6 +6,11 @@ export const courseService = {
     return response.data;
   },
 
+  async getPublished() {
+    const response = await api.get("/courses");
+    return response.data;
+  },
+
   async getById(id) {
     const response = await api.get(`/courses/${id}`);
     return response.data;

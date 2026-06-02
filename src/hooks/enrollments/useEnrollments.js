@@ -30,6 +30,8 @@ export function useEnrollInCourse() {
     onSettled: () => {
       qc.invalidateQueries({ queryKey: ["enrollments", "me"] });
       qc.invalidateQueries({ queryKey: ["student", "me"] });
+      // Refresh course lists so enrolled counts / state update in UI
+      qc.invalidateQueries(["courses"]);
     },
   });
 }
@@ -41,6 +43,18 @@ export function useUnenrollFromCourse() {
     onSettled: () => {
       qc.invalidateQueries({ queryKey: ["enrollments", "me"] });
       qc.invalidateQueries({ queryKey: ["student", "me"] });
+      qc.invalidateQueries(["courses"]);
+    },
+  });
+}
+
+export function useAdminEnrollStudent() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ courseId, studentId }) => enrollmentService.adminEnrollStudent(courseId, studentId),
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: ["students"] });
+      qc.invalidateQueries(["courses"]);
     },
   });
 }

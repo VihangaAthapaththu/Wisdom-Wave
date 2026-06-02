@@ -10,6 +10,7 @@ import {
   ChevronDown,
   GraduationCap,
   ClipboardList,
+  CreditCard,
 } from 'lucide-react';
 
 export function Sidebar({ isOpen, role }) {
@@ -28,6 +29,7 @@ export function Sidebar({ isOpen, role }) {
     { label: 'Students', icon: Users, href: '/dashboard/students' },
     { label: 'Enrollments', icon: ClipboardList, href: '/dashboard/students/enrollments' },
     { label: 'Lecturers', icon: GraduationCap, href: '/dashboard/lecturers' },
+    { label: 'Payments', icon: CreditCard, href: '/dashboard/payments' },
     { label: 'Blog', icon: FileText, href: '/dashboard/blog' },
     { label: 'Reports', icon: BarChart3, href: '/dashboard/reports' },
   ];

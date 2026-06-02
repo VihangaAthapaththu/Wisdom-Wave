@@ -25,4 +25,9 @@ export const paymentService = {
     const response = await api.put(`/payments/${paymentId}/fail`);
     return response.data;
   },
+
+  async verifySession(paymentId, sessionId) {
+    const response = await api.post(`/payments/${paymentId}/verify-session`, { sessionId });
+    return response.data;
+  },
 };
