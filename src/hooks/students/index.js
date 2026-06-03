@@ -1,1 +1,1 @@
-export { useStudents, useMyStudent, useUpdateMyStudentProfile, useDeactivateStudent } from "./useStudents";
+export { useStudents, useMyStudent, useMyStudentKpis, useUpdateMyStudentProfile, useDeactivateStudent } from "./useStudents";

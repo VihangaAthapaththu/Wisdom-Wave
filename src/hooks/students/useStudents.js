@@ -37,6 +37,19 @@ export function useMyStudent(initialData) {
   });
 }
 
+export function useMyStudentKpis() {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: ["student", "me", "kpis"],
+    queryFn: async () => {
+      const resp = await studentService.getMyKpis();
+      return resp?.data?.kpis || resp?.kpis || resp?.data || resp;
+    },
+    enabled: user?.role === "STUDENT",
+    staleTime: 30_000,
+  });
+}
+
 export function useUpdateMyStudentProfile() {
   const qc = useQueryClient();
 

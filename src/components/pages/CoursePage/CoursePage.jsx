@@ -4,7 +4,7 @@ import {
   Clock, Users, BookOpen, CheckCircle, Loader2,
   FileText, Video, Image, Music, File, Trash2,
   Plus, Calendar, Upload, AlertCircle, X, ChevronLeft,
-  ClipboardList, Award, Download, Eye, CreditCard, Lock, ExternalLink,
+  ClipboardList, Award, Download, Eye, CreditCard, Lock, ExternalLink, Pencil,
 } from 'lucide-react';
 import { Card, Button } from '@/components';
 import { ConfirmationModal, PageLoader } from '@/components';
@@ -17,8 +17,11 @@ import { useCourseMaterials, useAddMaterial, useDeleteMaterial } from '@/hooks';
 import {
   useCourseAssignments,
   useCreateAssignment,
+  useUpdateAssignment,
   useDeleteAssignment,
   useSubmitAssignment,
+  useDeleteMySubmission,
+  useMySubmissionsForCourse,
   useAssignmentSubmissions,
   useGradeSubmission,
 } from '@/hooks';
@@ -71,16 +74,16 @@ function getExtFromUrl(url) {
   return dot !== -1 ? name.substring(dot).toLowerCase() : '';
 }
 
-async function downloadFile(url, title, storedMimeType) {
+async function downloadFile(url, title, storedMimeType, fileExt) {
   try {
     const response = await fetch(url, { mode: 'cors' });
     if (!response.ok) throw new Error('fetch failed');
 
-    // Determine extension: URL path → stored DB mimeType → response Content-Type
+    // Determine extension: forced ext → URL path → stored DB mimeType → response Content-Type
     const extFromUrl = getExtFromUrl(url);
     const responseMime = (response.headers.get('content-type') || '').split(';')[0].trim();
     const resolvedMime = storedMimeType || responseMime || 'application/octet-stream';
-    const ext = extFromUrl || EXT_BY_MIME[resolvedMime] || '';
+    const ext = fileExt || extFromUrl || EXT_BY_MIME[resolvedMime] || '';
 
     // Always build the blob with the canonical MIME for that extension so the
     // browser shows the right file type (e.g. "PDF Document" not "File")
@@ -101,6 +104,17 @@ async function downloadFile(url, title, storedMimeType) {
   } catch {
     window.open(url, '_blank');
   }
+}
+
+function isYouTubeUrl(url) {
+  if (!url) return false;
+  return /youtube\.com\/watch\?v=|youtu\.be\//.test(url);
+}
+
+function getYouTubeId(url) {
+  if (!url) return null;
+  const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?\s]+)/);
+  return m?.[1] || null;
 }
 
 function fmtDate(d) {
@@ -234,37 +248,71 @@ function MaterialsTab({ courseId, canManage }) {
           {canManage && <p className="text-sm text-gray-400 mt-1">Upload the first resource to get started.</p>}
         </div>
       ) : (
-        <div className="space-y-3">
-          {sorted.map((m) => (
-            <div
-              key={m._id}
-              className="group flex items-center gap-4 bg-white border border-gray-100 rounded-xl p-4 shadow-sm hover:shadow-md hover:border-primary/20 transition-all"
-            >
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/10 to-primary-600/5 flex items-center justify-center shrink-0">
-                {getFileIcon(m.fileUrl, m.mimeType)}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-gray-900 text-sm truncate">{m.title}</p>
-                <p className="text-xs text-gray-400 mt-0.5">{fmtDate(m.createdAt)}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => downloadFile(m.fileUrl, m.title, m.mimeType)}
-                  className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary-600 border border-primary/30 hover:border-primary px-3 py-1.5 rounded-lg transition-colors bg-transparent cursor-pointer"
-                >
-                  <Download size={13} /> Download
-                </button>
-                {canManage && (
-                  <button
-                    onClick={() => setDeleteTarget(m)}
-                    className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors border-none bg-transparent cursor-pointer"
-                  >
-                    <Trash2 size={14} />
-                  </button>
+        <div className="space-y-4">
+          {sorted.map((m) => {
+            const isYT = isYouTubeUrl(m.fileUrl);
+            const ytId  = isYT ? getYouTubeId(m.fileUrl) : null;
+
+            return (
+              <div
+                key={m._id}
+                className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md hover:border-primary/20 transition-all overflow-hidden"
+              >
+                {/* YouTube embed */}
+                {isYT && ytId && (
+                  <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                    <iframe
+                      className="absolute inset-0 w-full h-full rounded-t-2xl"
+                      src={`https://www.youtube.com/embed/${ytId}`}
+                      title={m.title}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
                 )}
+
+                {/* Row: icon + title + date + actions */}
+                <div className="flex items-center gap-4 p-4">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary/10 to-primary-600/5 flex items-center justify-center shrink-0">
+                    {isYT
+                      ? <Video size={16} className="text-red-500" />
+                      : getFileIcon(m.fileUrl, m.mimeType)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-gray-900 text-sm truncate">{m.title}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">{fmtDate(m.createdAt)}</p>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {isYT ? (
+                      <a
+                        href={m.fileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs font-medium text-red-600 border border-red-200 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors"
+                      >
+                        <ExternalLink size={12} /> Open in YouTube
+                      </a>
+                    ) : (
+                      <button
+                        onClick={() => downloadFile(m.fileUrl, m.title, m.mimeType)}
+                        className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary-600 border border-primary/30 hover:border-primary px-3 py-1.5 rounded-lg transition-colors bg-transparent cursor-pointer"
+                      >
+                        <Download size={13} /> Download
+                      </button>
+                    )}
+                    {canManage && (
+                      <button
+                        onClick={() => setDeleteTarget(m)}
+                        className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors border-none bg-transparent cursor-pointer"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -424,10 +472,17 @@ function SubmissionsModal({ assignment, onClose }) {
                     </div>
                   </div>
                   {sub.submissionFileUrl && (
-                    <a href={sub.submissionFileUrl} target="_blank" rel="noopener noreferrer"
-                      className="mt-2 inline-flex items-center gap-1.5 text-xs text-primary font-medium hover:underline">
-                      <Download size={12} /> View Submission
-                    </a>
+                    <button
+                      onClick={() => downloadFile(
+                        sub.submissionFileUrl,
+                        `${sub.student?.user?.name || 'submission'} - ${assignment.title}`,
+                        null,
+                        sub.submissionFileExt
+                      )}
+                      className="mt-2 inline-flex items-center gap-1.5 text-xs text-primary font-medium hover:underline border-none bg-transparent cursor-pointer p-0"
+                    >
+                      <Download size={12} /> Download Submission
+                    </button>
                   )}
                   {sub.feedback && (
                     <p className="mt-2 text-xs text-gray-500 bg-gray-50 rounded-lg px-3 py-2">Feedback: {sub.feedback}</p>
@@ -494,19 +549,28 @@ function SubmissionsModal({ assignment, onClose }) {
 
 function AssignmentsTab({ courseId, canManage, isStudent }) {
   const { data: assignments = [], isLoading } = useCourseAssignments(courseId);
+  const { data: mySubmissionsMap = {} } = useMySubmissionsForCourse(isStudent ? courseId : null);
   const createAssignment = useCreateAssignment();
+  const updateAssignment = useUpdateAssignment();
   const deleteAssignment = useDeleteAssignment();
   const submitAssignment = useSubmitAssignment();
+  const deleteMySubmission = useDeleteMySubmission();
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [createForm, setCreateForm] = useState({ title: '', description: '', dueDate: '' });
   const [createError, setCreateError] = useState('');
   const [isCreating, setIsCreating] = useState(false);
 
+  const [editTarget, setEditTarget] = useState(null);
+  const [editForm, setEditForm] = useState({ title: '', description: '', dueDate: '' });
+  const [editError, setEditError] = useState('');
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
+
   const [submitTarget, setSubmitTarget] = useState(null);
   const [submitFile, setSubmitFile] = useState(null);
   const [submitError, setSubmitError] = useState('');
   const [isSubmittingAssignment, setIsSubmittingAssignment] = useState(false);
+  const [removingId, setRemovingId] = useState(null);
 
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -557,6 +621,38 @@ function AssignmentsTab({ courseId, canManage, isStudent }) {
     }
   };
 
+  const openEditModal = (a) => {
+    setEditTarget(a);
+    setEditForm({
+      title: a.title,
+      description: a.description || '',
+      dueDate: a.dueDate ? new Date(a.dueDate).toISOString().split('T')[0] : '',
+    });
+    setEditError('');
+  };
+
+  const handleEdit = async (e) => {
+    e.preventDefault();
+    if (!editForm.title.trim()) { setEditError('Title is required.'); return; }
+    try {
+      setIsSavingEdit(true);
+      await updateAssignment.mutateAsync({
+        id: editTarget._id,
+        data: {
+          title: editForm.title.trim(),
+          description: editForm.description.trim(),
+          dueDate: editForm.dueDate || undefined,
+        },
+      });
+      toast.success('Assignment updated.');
+      setEditTarget(null);
+    } catch (err) {
+      setEditError(err?.response?.data?.message || 'Failed to update assignment.');
+    } finally {
+      setIsSavingEdit(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!submitFile) {
@@ -567,7 +663,7 @@ function AssignmentsTab({ courseId, canManage, isStudent }) {
       setIsSubmittingAssignment(true);
       const fd = new FormData();
       fd.append('file', submitFile);
-      await submitAssignment.mutateAsync({ id: submitTarget._id, data: fd });
+      await submitAssignment.mutateAsync({ id: submitTarget._id, data: fd, courseId });
       toast.success('Assignment submitted successfully!');
       setSubmitTarget(null);
       setSubmitFile(null);
@@ -575,6 +671,18 @@ function AssignmentsTab({ courseId, canManage, isStudent }) {
       setSubmitError(err?.response?.data?.message || 'Failed to submit assignment.');
     } finally {
       setIsSubmittingAssignment(false);
+    }
+  };
+
+  const handleRemoveSubmission = async (assignmentId) => {
+    try {
+      setRemovingId(assignmentId);
+      await deleteMySubmission.mutateAsync({ id: assignmentId, courseId });
+      toast.success('Submission removed.');
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Failed to remove submission.');
+    } finally {
+      setRemovingId(null);
     }
   };
 
@@ -605,49 +713,95 @@ function AssignmentsTab({ courseId, canManage, isStudent }) {
         </div>
       ) : (
         <div className="space-y-4">
-          {sorted.map((a) => (
-            <div key={a._id} className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/20 transition-all">
-              <div className="flex items-start justify-between gap-4 flex-wrap">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <h3 className="font-bold text-gray-900 text-sm">{a.title}</h3>
-                    {dueBadge(a.dueDate)}
+          {sorted.map((a) => {
+            const mySubmission = mySubmissionsMap[String(a._id)];
+            const isSubmitted = !!mySubmission;
+            const isRemoving = removingId === a._id;
+            return (
+              <div key={a._id} className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/20 transition-all">
+                <div className="flex items-start justify-between gap-4 flex-wrap">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <h3 className="font-bold text-gray-900 text-sm">{a.title}</h3>
+                      {dueBadge(a.dueDate)}
+                      {isStudent && isSubmitted && (
+                        <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full border ${
+                          mySubmission.status === 'LATE SUBMISSION'
+                            ? 'bg-amber-50 text-amber-700 border-amber-200'
+                            : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                        }`}>
+                          <CheckCircle size={10} />
+                          {mySubmission.status === 'LATE SUBMISSION' ? 'Late Submission' : 'Submitted'}
+                        </span>
+                      )}
+                    </div>
+                    {a.description && (
+                      <p className="text-sm text-gray-500 leading-relaxed mt-1">{a.description}</p>
+                    )}
+                    <p className="text-xs text-gray-400 mt-1.5">Posted {fmtDate(a.createdAt)}</p>
+                    {isStudent && isSubmitted && (
+                      <p className="text-xs text-gray-400 mt-0.5">
+                        Submitted {fmtDate(mySubmission.submittedAt)}
+                        {mySubmission.marks != null && (
+                          <span className="ml-2 font-semibold text-emerald-600">{mySubmission.marks} marks</span>
+                        )}
+                      </p>
+                    )}
                   </div>
-                  {a.description && (
-                    <p className="text-sm text-gray-500 leading-relaxed mt-1">{a.description}</p>
-                  )}
-                  <p className="text-xs text-gray-400 mt-1.5">Posted {fmtDate(a.createdAt)}</p>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  {canManage && (
-                    <>
-                      <button
-                        onClick={() => setViewSubmissions(a)}
-                        className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 border border-blue-200 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-colors border-solid bg-transparent cursor-pointer"
-                      >
-                        <Eye size={13} /> Submissions
-                      </button>
-                      <button
-                        onClick={() => setDeleteTarget(a)}
-                        className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors border-none bg-transparent cursor-pointer"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </>
-                  )}
-                  {isStudent && (
-                    <Button
-                      size="sm"
-                      onClick={() => { setSubmitTarget(a); setSubmitFile(null); setSubmitError(''); }}
-                      className="text-xs font-semibold bg-gradient-to-r from-primary to-primary-600 text-white px-3 py-1.5 rounded-lg"
-                    >
-                      <Upload size={13} className="mr-1" /> Submit
-                    </Button>
-                  )}
+                  <div className="flex items-center gap-2 shrink-0">
+                    {canManage && (
+                      <>
+                        <button
+                          onClick={() => setViewSubmissions(a)}
+                          className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 border border-blue-200 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-colors border-solid bg-transparent cursor-pointer"
+                        >
+                          <Eye size={13} /> Submissions
+                        </button>
+                        <button
+                          onClick={() => openEditModal(a)}
+                          className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-primary/5 transition-colors border-none bg-transparent cursor-pointer"
+                        >
+                          <Pencil size={14} />
+                        </button>
+                        <button
+                          onClick={() => setDeleteTarget(a)}
+                          className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors border-none bg-transparent cursor-pointer"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </>
+                    )}
+                    {isStudent && (
+                      <div className="flex items-center gap-2">
+                        {isSubmitted && (
+                          <button
+                            onClick={() => handleRemoveSubmission(a._id)}
+                            disabled={isRemoving}
+                            className="inline-flex items-center gap-1.5 text-xs font-medium text-red-500 border border-red-200 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors border-solid bg-transparent cursor-pointer disabled:opacity-50"
+                          >
+                            {isRemoving ? <Loader2 size={12} className="animate-spin" /> : <Trash2 size={12} />}
+                            Remove
+                          </button>
+                        )}
+                        <Button
+                          size="sm"
+                          onClick={() => { setSubmitTarget(a); setSubmitFile(null); setSubmitError(''); }}
+                          className={`text-xs font-semibold px-3 py-1.5 rounded-lg ${
+                            isSubmitted
+                              ? 'bg-white text-primary border border-primary/30 hover:bg-primary/5'
+                              : 'bg-gradient-to-r from-primary to-primary-600 text-white'
+                          }`}
+                        >
+                          <Upload size={13} className="mr-1" />
+                          {isSubmitted ? 'Resubmit' : 'Submit'}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -749,6 +903,59 @@ function AssignmentsTab({ courseId, canManage, isStudent }) {
                 <Button type="button" variant="outline" onClick={() => setSubmitTarget(null)}>Cancel</Button>
                 <Button type="submit" disabled={isSubmittingAssignment} className="bg-gradient-to-r from-primary to-primary-600 text-white px-5">
                   {isSubmittingAssignment ? <><Loader2 size={14} className="animate-spin" /> Submitting...</> : 'Submit'}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Assignment Modal */}
+      {editTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+              <h2 className="text-base font-bold text-gray-900">Edit Assignment</h2>
+              <button onClick={() => setEditTarget(null)} className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 transition-colors border-none bg-transparent cursor-pointer">
+                <X size={17} />
+              </button>
+            </div>
+            <form onSubmit={handleEdit} className="p-6 flex flex-col gap-4">
+              {editError && (
+                <div className="flex items-start gap-2 bg-red-50 border border-red-100 text-red-600 px-3 py-2.5 rounded-lg text-sm">
+                  <AlertCircle size={15} className="shrink-0 mt-0.5" /> {editError}
+                </div>
+              )}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-gray-700">Title *</label>
+                <input
+                  value={editForm.title}
+                  onChange={(e) => setEditForm((f) => ({ ...f, title: e.target.value }))}
+                  className="w-full px-3.5 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-gray-700">Description</label>
+                <textarea
+                  rows={3}
+                  value={editForm.description}
+                  onChange={(e) => setEditForm((f) => ({ ...f, description: e.target.value }))}
+                  className="w-full px-3.5 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 resize-none transition-colors"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-gray-700">Due Date</label>
+                <input
+                  type="date"
+                  value={editForm.dueDate}
+                  onChange={(e) => setEditForm((f) => ({ ...f, dueDate: e.target.value }))}
+                  className="w-full px-3.5 py-2.5 border-2 border-gray-200 rounded-xl text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-colors"
+                />
+              </div>
+              <div className="flex justify-end gap-3 pt-1">
+                <Button type="button" variant="outline" onClick={() => setEditTarget(null)}>Cancel</Button>
+                <Button type="submit" disabled={isSavingEdit} className="bg-gradient-to-r from-primary to-primary-600 text-white px-5">
+                  {isSavingEdit ? <><Loader2 size={14} className="animate-spin" /> Saving...</> : 'Save Changes'}
                 </Button>
               </div>
             </form>

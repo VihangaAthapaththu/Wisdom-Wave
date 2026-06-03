@@ -33,6 +33,16 @@ export const assignmentService = {
     return response.data;
   },
 
+  async deleteMySubmission(id) {
+    const response = await api.delete(`/assignments/${id}/submit`);
+    return response.data;
+  },
+
+  async getMySubmissionsForCourse(courseId) {
+    const response = await api.get(`/courses/${courseId}/my-submissions`);
+    return response.data;
+  },
+
   async getSubmissions(assignmentId) {
     const response = await api.get(`/assignments/${assignmentId}/submissions`);
     return response.data;

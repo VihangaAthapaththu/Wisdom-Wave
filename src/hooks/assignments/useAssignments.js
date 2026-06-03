@@ -64,12 +64,37 @@ export function useDeleteAssignment() {
   });
 }
 
+export function useMySubmissionsForCourse(courseId) {
+  return useQuery({
+    queryKey: ["my-submissions", "course", courseId],
+    queryFn: async () => {
+      const res = await assignmentService.getMySubmissionsForCourse(courseId);
+      const list = res.data?.submissions ?? [];
+      // Return as a map: assignmentId → submission object
+      return Object.fromEntries(list.map((s) => [String(s.assignment), s]));
+    },
+    enabled: !!courseId,
+  });
+}
+
 export function useSubmitAssignment() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ id, data }) => assignmentService.submitAssignment(id, data),
-    onSettled: () => {
+    onSettled: (_, __, { courseId }) => {
       qc.invalidateQueries({ queryKey: ["assignments", "me"] });
+      if (courseId) qc.invalidateQueries({ queryKey: ["my-submissions", "course", courseId] });
+    },
+  });
+}
+
+export function useDeleteMySubmission() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id }) => assignmentService.deleteMySubmission(id),
+    onSettled: (_, __, { courseId }) => {
+      qc.invalidateQueries({ queryKey: ["assignments", "me"] });
+      if (courseId) qc.invalidateQueries({ queryKey: ["my-submissions", "course", courseId] });
     },
   });
 }

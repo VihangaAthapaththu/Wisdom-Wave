@@ -20,4 +20,9 @@ export const studentService = {
     const response = await api.post("/students", data);
     return response.data;
   },
+
+  async getMyKpis() {
+    const response = await api.get("/students/me/kpis");
+    return response.data;
+  },
 };
