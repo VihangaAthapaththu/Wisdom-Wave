@@ -47,6 +47,17 @@ export function useMyLecturer(initialData) {
   });
 }
 
+export function useMyLecturerKpis() {
+  return useQuery({
+    queryKey: ["lecturer", "me", "kpis"],
+    queryFn: async () => {
+      const resp = await lecturerService.getMyKpis();
+      return resp?.data?.kpis || resp?.kpis || resp?.data || resp;
+    },
+    staleTime: 30_000,
+  });
+}
+
 export function useRegisterLecturer() {
   const qc = useQueryClient();
   return useMutation({

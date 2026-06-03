@@ -95,7 +95,9 @@ export function SignIn() {
     setLoading(true);
     try {
       const user = await login(form.email, form.password);
-      navigate(user.role === 'ADMIN' ? '/dashboard' : '/student-dashboard');
+      if(user.role === 'ADMIN') navigate('/dashboard')
+      else if(user.role === 'LECTURER') navigate('/lecturer-dashboard');
+      else navigate('/student-dashboard');
     } catch (err) {
       const res = err.response?.data;
       if (res?.errors) setFieldErrors(res.errors);

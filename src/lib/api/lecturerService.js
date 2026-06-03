@@ -62,5 +62,14 @@ export const lecturerService = {
     const response = await api.delete(`/lecturers/${id}`);
     return response.data;
   },
+
+  /**
+   * Get KPI summary for the logged-in lecturer.
+   * @returns {Promise<Object>} { totalCourses, publishedCourses, totalStudents, totalMaterials }
+   */
+  async getMyKpis() {
+    const response = await api.get("/lecturers/me/kpis");
+    return response.data;
+  },
 };
 

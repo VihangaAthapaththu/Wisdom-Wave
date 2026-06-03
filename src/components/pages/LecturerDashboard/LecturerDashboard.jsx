@@ -15,13 +15,14 @@ import {
   PageLoader,
   LecturerCoursesList,
 } from "@/components";
-import { useMyLecturer, useCourses } from "@/hooks";
+import { useMyLecturer, useMyLecturerKpis, useCourses } from "@/hooks";
 
 export function LecturerDashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { data: courses = [], isLoading: isCoursesLoading } = useCourses(false);
   const { data: profileData, isLoading: isProfileLoading } = useMyLecturer();
+  const { data: kpis } = useMyLecturerKpis();
   const profile =
     profileData?.data?.lecturer || profileData?.lecturer || profileData || null;
 
@@ -34,99 +35,97 @@ export function LecturerDashboard() {
     }
   };
 
-  const totalEnrolled = courses.reduce((sum, c) => sum + (c.enrollmentCount || 0), 0);
-
   const stats = [
-    { icon: BookOpen, label: "My Courses", value: String(courses.length) },
-    { icon: Users, label: "Enrolled Students", value: String(totalEnrolled) },
-    { icon: FileText, label: "Materials Uploaded", value: "—" },
-    { icon: CheckSquare, label: "Assignments Graded", value: "—" },
+    { icon: BookOpen,    label: "My Courses",        value: kpis ? String(kpis.totalCourses)    : String(courses.length) },
+    { icon: Users,       label: "Total Students",     value: kpis ? String(kpis.totalStudents)   : "—" },
+    { icon: FileText,    label: "Materials Uploaded", value: kpis ? String(kpis.totalMaterials)  : "—" },
+    { icon: CheckSquare, label: "Published Courses",  value: kpis ? String(kpis.publishedCourses): "—" },
   ];
 
   if (isProfileLoading || isCoursesLoading) {
     return (
-      <div className="bg-bg-paper min-h-screen p-4 md:p-6 lg:p-10 flex items-center justify-center">
-        <PageLoader className="" size={280} fullScreen={true} />
+      <div className="bg-bg-paper min-h-screen flex items-center justify-center">
+        <PageLoader size={280} fullScreen={true} />
       </div>
     );
   }
 
   return (
-    <div className="bg-bg-paper min-h-screen p-4 md:p-6 lg:p-10 flex flex-col">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between md:items-center mb-[30px] lg:mb-[50px] flex-wrap gap-5">
-        <div>
-          <h1 className="text-[22px] md:text-[28px] lg:text-[40px] font-bold text-text-strong mb-2.5 bg-gradient-to-br from-primary to-primary-600 bg-clip-text text-transparent m-0">
-            Lecturer Dashboard
-          </h1>
-          <p className="text-base text-muted m-0">
-            Welcome back, {user?.name || "Lecturer"}
-            {profile?.specialization && (
-              <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">
-                {profile.specialization}
-              </span>
-            )}
-          </p>
+    <div className="bg-bg-paper min-h-screen flex flex-col">
+      {/* Main content */}
+      <div className="flex-1 p-4 md:p-6 lg:p-10">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 lg:mb-10">
+          <div>
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-br from-primary to-primary-600 bg-clip-text text-transparent leading-tight">
+              Lecturer Dashboard
+            </h1>
+            <p className="text-sm text-muted mt-1.5 flex items-center flex-wrap gap-1.5">
+              Welcome back, {user?.name || "Lecturer"}
+              {profile?.specialization && (
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+                  {profile.specialization}
+                </span>
+              )}
+            </p>
+          </div>
+
+          <div className="flex gap-2.5 items-center shrink-0">
+            <button className="w-10 h-10 rounded-xl bg-white border border-border text-text-strong flex items-center justify-center hover:border-primary hover:text-primary transition-all duration-300 cursor-pointer shadow-sm">
+              <Settings size={18} />
+            </button>
+            <button
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-br from-primary to-primary-600 text-white rounded-xl font-semibold shadow-[0_4px_12px_rgba(255,165,0,0.3)] hover:-translate-y-0.5 hover:shadow-[0_6px_16px_rgba(255,165,0,0.4)] transition-all duration-300 cursor-pointer"
+              onClick={handleLogout}
+            >
+              <LogOut size={18} />
+              <span className="hidden sm:inline text-sm">Logout</span>
+            </button>
+          </div>
         </div>
-        <div className="flex gap-[15px] items-center w-full md:w-auto">
-          <button className="w-11 h-11 rounded-[10px] bg-white border-2 border-border text-text-strong flex items-center justify-center transition-all duration-300 hover:border-primary hover:text-primary cursor-pointer">
-            <Settings size={20} />
-          </button>
-          <button
-            className="px-5 py-2.5 bg-gradient-to-br from-primary to-primary-600 text-white border-none rounded-lg font-semibold flex items-center justify-center gap-2 transition-all duration-300 shadow-[0_4px_12px_rgba(255,165,0,0.3)] hover:-translate-y-[2px] hover:shadow-[0_6px_16px_rgba(255,165,0,0.4)] w-11 md:w-auto p-2.5 md:py-2.5 md:px-5 cursor-pointer"
-            onClick={handleLogout}
-          >
-            <LogOut size={20} />
-            <span className="hidden md:inline">Logout</span>
-          </button>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 lg:mb-10">
+          {stats.map((stat, index) => (
+            <StatCard key={index} {...stat} />
+          ))}
+        </div>
+
+        {/* Quick Access + My Courses */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+          {/* Quick Access */}
+          <div>
+            <h2 className="text-lg md:text-xl font-bold text-text-strong mb-4 lg:mb-5">
+              Quick Access
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <MenuCard
+                href="/lecturer-dashboard/courses"
+                icon={BookOpen}
+                title="My Courses"
+                description="Manage your assigned courses"
+              />
+              <MenuCard
+                href="/lecturer-dashboard/blog"
+                icon={FileText}
+                title="Blog Contributions"
+                description="Write and publish educational articles"
+              />
+            </div>
+          </div>
+
+          {/* My Courses */}
+          <div>
+            <h2 className="text-lg md:text-xl font-bold text-text-strong mb-4 lg:mb-5">
+              My Courses
+            </h2>
+            <LecturerCoursesList courses={courses} />
+          </div>
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-[30px] lg:mb-[50px]">
-        {stats.map((stat, index) => (
-          <StatCard key={index} {...stat} />
-        ))}
-      </div>
-
-      {/* Menu Grid */}
-      <div className="mb-[50px]">
-        <h2 className="text-[20px] md:text-[24px] font-bold text-text-strong m-0 mb-5 lg:mb-[30px]">
-          Quick Access
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
-          <MenuCard
-            href="/lecturer-dashboard/courses"
-            icon={BookOpen}
-            title="My Courses"
-            description="Manage your assigned courses"
-          />
-          <MenuCard
-            href="/lecturer-dashboard/courses/1/materials"
-            icon={FileText}
-            title="Course Materials"
-            description="Upload and manage study materials"
-          />
-          <MenuCard
-            href="/lecturer-dashboard/blog"
-            icon={FileText}
-            title="Blog Contributions"
-            description="Write and publish educational articles"
-          />
-        </div>
-      </div>
-
-      {/* My Courses */}
-      <div className="mb-[50px]">
-        <h2 className="text-[20px] md:text-[24px] font-bold text-text-strong m-0 mb-5 lg:mb-[30px]">
-          My Courses
-        </h2>
-          <LecturerCoursesList courses={courses} />
-
-      </div>
-
-      {/* Footer */}
-      <footer className="bg-black text-white text-center p-6 rounded-lg text-sm mt-auto">
+      {/* Footer — outside padded area so it spans full width with no gap */}
+      <footer className="bg-black text-white text-center py-5 text-sm">
         <p className="m-0">
           &copy; 2026 Wisdom Wave Lecturer Portal. All rights reserved.
         </p>

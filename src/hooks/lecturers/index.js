@@ -1,1 +1,1 @@
-export { useLecturers, useLecturer, useMyLecturer, useRegisterLecturer, useDeactivateLecturer } from './useLecturers';
+export { useLecturers, useLecturer, useMyLecturer, useMyLecturerKpis, useRegisterLecturer, useDeactivateLecturer } from './useLecturers';

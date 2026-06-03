@@ -878,9 +878,7 @@ export function CoursePage() {
                 )}
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 leading-tight">{course.title}</h1>
-              {course.description && (
-                <p className="text-gray-500 text-sm leading-relaxed max-w-2xl">{course.description}</p>
-              )}
+
               {course.lecturer?.user?.name && (
                 <p className="text-sm text-gray-500 mt-3">
                   Instructor: <span className="font-semibold text-gray-700">{course.lecturer.user.name}</span>

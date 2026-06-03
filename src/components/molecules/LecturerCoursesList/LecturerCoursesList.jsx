@@ -1,8 +1,11 @@
 import React from 'react';
 import { Card, Button } from '@/components';
 import { BookOpen, Trash2, Edit } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export function LecturerCoursesList({ courses = [], onEdit, onDelete }) {
+
+  const navigate = useNavigate();
   if (!courses || courses.length === 0) {
     return (
       <Card className="p-6 bg-white rounded-xl border border-gray-100 shadow-sm">
@@ -14,7 +17,7 @@ export function LecturerCoursesList({ courses = [], onEdit, onDelete }) {
   return (
     <div className="grid grid-cols-1 gap-4">
       {courses.map((course) => (
-        <Card key={course._id || course.id} className="flex items-center justify-between p-4">
+        <Card key={course._id || course.id} className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-100" onClick={() => {navigate(`/courses/${course._id || course.id}`)}}>
           <div className="flex items-start gap-4 min-w-0">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/15 to-primary-600/10 flex items-center justify-center shrink-0">
               <BookOpen size={18} className="text-primary" />
