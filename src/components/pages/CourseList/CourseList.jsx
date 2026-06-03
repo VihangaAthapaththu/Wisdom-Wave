@@ -3,6 +3,7 @@ import { Search, Code2, Smartphone, Network, Globe, Sparkles, BarChart3 } from '
 import { CourseCard } from '@/components/molecules';
 import { useCourses } from '@/hooks';
 import { useAuth } from '@/context';
+import { PageLoader } from '@/components/atoms';
 
 const ICONS = [Code2, Smartphone, Network, Globe, Sparkles, BarChart3];
 
@@ -96,9 +97,7 @@ export function CourseList() {
 
         {/* Course Grid */}
         {isLoading ? (
-          <div className="rounded-2xl border border-border bg-white px-6 py-10 text-center text-sm text-muted shadow-sm">
-            Loading courses...
-          </div>
+<PageLoader size={48} className="mx-auto my-20" />
         ) : isError ? (
           <div className="rounded-2xl border border-danger/20 bg-danger/5 px-6 py-10 text-center text-sm text-danger">
             We could not load the course catalog right now.

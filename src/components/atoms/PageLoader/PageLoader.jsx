@@ -6,7 +6,7 @@ import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 // - Falls back to an SVG (same name) or a simple spinner if needed.
 
 export function PageLoader({ animationPath, className = '', size = 160, loop = true, autoplay = true, fullScreen = false }) {
-  const defaultLottie = '/animations/d35e7bbc-1176-11ee-bf08-7b25604dc165 (1).lottie';
+  const defaultLottie = '/animations/e0022e98-1173-11ee-b0f0-1fd94abf086c.lottie';
 
   const src = animationPath || defaultLottie;
 

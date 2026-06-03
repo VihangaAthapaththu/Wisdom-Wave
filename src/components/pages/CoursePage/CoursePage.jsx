@@ -26,18 +26,81 @@ import { toast } from 'sonner';
 
 // ─── helpers ───────────────────────────────────────────────────────────────
 
-function getFileIcon(url) {
-  if (!url) return <File size={18} className="text-gray-400" />;
-  const lower = url.toLowerCase();
-  if (lower.includes('.pdf'))
+function getFileIcon(url, mimeType) {
+  const lower = (url || '').toLowerCase().split('?')[0];
+  const mime = mimeType || '';
+  if (lower.match(/\.pdf/) || mime === 'application/pdf')
     return <FileText size={18} className="text-red-500" />;
-  if (lower.match(/\.(mp4|webm|mov|avi|mkv)/))
+  if (lower.match(/\.(docx?)/) || mime.includes('wordprocessingml') || mime === 'application/msword')
+    return <FileText size={18} className="text-blue-600" />;
+  if (lower.match(/\.(xlsx?)/) || mime.includes('spreadsheetml') || mime === 'application/vnd.ms-excel')
+    return <FileText size={18} className="text-green-600" />;
+  if (lower.match(/\.(mp4|webm|mov|avi|mkv)/) || mime.startsWith('video/'))
     return <Video size={18} className="text-blue-500" />;
-  if (lower.match(/\.(jpg|jpeg|png|gif|webp|svg)/))
+  if (lower.match(/\.(jpg|jpeg|png|gif|webp|svg)/) || mime.startsWith('image/'))
     return <Image size={18} className="text-green-500" />;
-  if (lower.match(/\.(mp3|wav|ogg|flac)/))
+  if (lower.match(/\.(mp3|wav|ogg|flac)/) || mime.startsWith('audio/'))
     return <Music size={18} className="text-purple-500" />;
   return <File size={18} className="text-gray-400" />;
+}
+
+const MIME_BY_EXT = {
+  '.pdf':  'application/pdf',
+  '.doc':  'application/msword',
+  '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  '.xls':  'application/vnd.ms-excel',
+  '.xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  '.ppt':  'application/vnd.ms-powerpoint',
+  '.pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  '.zip':  'application/zip',
+  '.mp4':  'video/mp4',
+  '.mp3':  'audio/mpeg',
+  '.jpg':  'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.png':  'image/png',
+};
+
+const EXT_BY_MIME = Object.fromEntries(
+  Object.entries(MIME_BY_EXT).map(([ext, mime]) => [mime, ext])
+);
+
+function getExtFromUrl(url) {
+  if (!url) return '';
+  const name = url.split('?')[0].split('#')[0].split('/').pop();
+  const dot = name.lastIndexOf('.');
+  return dot !== -1 ? name.substring(dot).toLowerCase() : '';
+}
+
+async function downloadFile(url, title, storedMimeType) {
+  try {
+    const response = await fetch(url, { mode: 'cors' });
+    if (!response.ok) throw new Error('fetch failed');
+
+    // Determine extension: URL path → stored DB mimeType → response Content-Type
+    const extFromUrl = getExtFromUrl(url);
+    const responseMime = (response.headers.get('content-type') || '').split(';')[0].trim();
+    const resolvedMime = storedMimeType || responseMime || 'application/octet-stream';
+    const ext = extFromUrl || EXT_BY_MIME[resolvedMime] || '';
+
+    // Always build the blob with the canonical MIME for that extension so the
+    // browser shows the right file type (e.g. "PDF Document" not "File")
+    const blobMime = MIME_BY_EXT[ext] || resolvedMime;
+    const arrayBuffer = await response.arrayBuffer();
+    const blob = new Blob([arrayBuffer], { type: blobMime });
+    const blobUrl = URL.createObjectURL(blob);
+
+    const safe = (title || 'download').replace(/[/\\:*?"<>|]/g, '_');
+    const filename = ext && safe.toLowerCase().endsWith(ext) ? safe : safe + ext;
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(blobUrl);
+  } catch {
+    window.open(url, '_blank');
+  }
 }
 
 function fmtDate(d) {
@@ -178,21 +241,19 @@ function MaterialsTab({ courseId, canManage }) {
               className="group flex items-center gap-4 bg-white border border-gray-100 rounded-xl p-4 shadow-sm hover:shadow-md hover:border-primary/20 transition-all"
             >
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/10 to-primary-600/5 flex items-center justify-center shrink-0">
-                {getFileIcon(m.fileUrl)}
+                {getFileIcon(m.fileUrl, m.mimeType)}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-gray-900 text-sm truncate">{m.title}</p>
                 <p className="text-xs text-gray-400 mt-0.5">{fmtDate(m.createdAt)}</p>
               </div>
               <div className="flex items-center gap-2">
-                <a
-                  href={m.fileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary-600 border border-primary/30 hover:border-primary px-3 py-1.5 rounded-lg transition-colors"
+                <button
+                  onClick={() => downloadFile(m.fileUrl, m.title, m.mimeType)}
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary-600 border border-primary/30 hover:border-primary px-3 py-1.5 rounded-lg transition-colors bg-transparent cursor-pointer"
                 >
-                  <Eye size={13} /> View
-                </a>
+                  <Download size={13} /> Download
+                </button>
                 {canManage && (
                   <button
                     onClick={() => setDeleteTarget(m)}
