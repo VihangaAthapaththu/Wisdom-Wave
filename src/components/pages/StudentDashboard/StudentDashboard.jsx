@@ -30,19 +30,19 @@ export function StudentDashboard() {
   const stats = [
     {
       icon: BookOpen, label: 'Courses Enrolled',
-      value: isLoading ? '—' : (kpis?.totalEnrolled ?? enrolledCourses.length).toString(),
+      value: isLoading ? '0' : (kpis?.totalEnrolled ?? enrolledCourses.length).toString(),
     },
     {
       icon: Clock, label: 'Learning Hours',
-      value: kpis ? `${kpis.totalLearningHours}h` : '—',
+      value: kpis ? `${kpis.totalLearningHours}h` : '0.00',
     },
     {
       icon: ClipboardList, label: 'Pending Assignments',
-      value: kpis ? String(kpis.pendingAssignments) : '—',
+      value: kpis ? String(kpis.pendingAssignments) : '0',
     },
     {
       icon: FileText, label: 'Materials Available',
-      value: kpis ? String(kpis.totalMaterials) : '—',
+      value: kpis ? String(kpis.totalMaterials) : '0',
     },
   ];
 
