@@ -1,11 +1,12 @@
 import React from 'react';
 import {
   BookOpen, Clock, ClipboardList, FileText,
-  ArrowRight, GraduationCap,
+  ArrowRight, GraduationCap, TrendingUp,
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { EnrolledCourseCard, StatCard } from '@/components/molecules';
-import { useMyStudent, useMyStudentKpis } from '@/hooks';
+import { ProgressRing } from '@/components/atoms';
+import { useMyStudent, useMyStudentKpis, useProgressOverview } from '@/hooks';
 import { useAuth } from '@/context';
 
 export function StudentDashboard() {
@@ -13,8 +14,15 @@ export function StudentDashboard() {
   const navigate = useNavigate();
   const { data: student, isLoading } = useMyStudent();
   const { data: kpis } = useMyStudentKpis();
+  const { data: progress } = useProgressOverview();
 
   const rawCourses = student?.enrolledCourses ?? [];
+
+  // Build a map of courseId → progress data for quick lookup
+  const progressMap = {};
+  (progress?.courses || []).forEach((cp) => {
+    progressMap[cp.courseId] = cp;
+  });
 
   // Map full populated course objects to what EnrolledCourseCard expects
   const enrolledCourses = rawCourses.map((c) => ({
@@ -26,6 +34,11 @@ export function StudentDashboard() {
     fee:             c.fee          ?? 0,
     enrollmentCount: c.enrollmentCount ?? null,
   }));
+
+  const overallPct    = progress?.summary?.overallProgress ?? null;
+  const completedCount = progress?.summary?.completed ?? 0;
+  const inProgressCount = progress?.summary?.inProgress ?? 0;
+  const notStartedCount = progress?.summary?.notStarted ?? 0;
 
   const stats = [
     {
@@ -75,6 +88,38 @@ export function StudentDashboard() {
           ))}
         </div>
 
+        {/* Overall Progress Overview */}
+        {overallPct !== null && (
+          <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6 mb-8 lg:mb-10">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-6">
+              <ProgressRing value={overallPct} size={110} strokeWidth={10} label="Overall" />
+              <div className="flex-1">
+                <h2 className="text-base font-bold text-gray-900 mb-3">Learning Progress</h2>
+                <div className="grid grid-cols-3 gap-3 mb-4">
+                  <div className="text-center bg-emerald-50 rounded-xl p-3 border border-emerald-100">
+                    <p className="text-xl font-bold text-emerald-700">{completedCount}</p>
+                    <p className="text-xs text-emerald-600 font-medium mt-0.5">Completed</p>
+                  </div>
+                  <div className="text-center bg-blue-50 rounded-xl p-3 border border-blue-100">
+                    <p className="text-xl font-bold text-blue-700">{inProgressCount}</p>
+                    <p className="text-xs text-blue-600 font-medium mt-0.5">In Progress</p>
+                  </div>
+                  <div className="text-center bg-gray-50 rounded-xl p-3 border border-gray-100">
+                    <p className="text-xl font-bold text-gray-600">{notStartedCount}</p>
+                    <p className="text-xs text-gray-500 font-medium mt-0.5">Not Started</p>
+                  </div>
+                </div>
+                <Link
+                  to="/student-dashboard/progress"
+                  className="inline-flex items-center gap-1.5 text-sm text-primary font-semibold hover:gap-2.5 transition-all duration-200"
+                >
+                  <TrendingUp size={14} /> View Full Analytics
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Enrolled Courses */}
         <div>
           <div className="flex items-center justify-between mb-5">
@@ -121,7 +166,11 @@ export function StudentDashboard() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {enrolledCourses.map((course) => (
-                <EnrolledCourseCard key={course.id} course={course} />
+                <EnrolledCourseCard
+                  key={course.id}
+                  course={course}
+                  progressData={progressMap[course.id] || null}
+                />
               ))}
             </div>
           )}

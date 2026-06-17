@@ -8,3 +8,6 @@ export { assignmentService } from "./assignmentService";
 export { materialService } from "./materialService";
 export { adminService } from "./adminService";
 export { blogService } from "./blogService";
+export { progressService } from "./progressService";
+export { notificationService } from "./notificationService";
+export { chatService } from "./chatService";

@@ -22,3 +22,4 @@ export { BlogDetail } from './BlogDetail/BlogDetail';
 export { BlogEditor } from './BlogEditor/BlogEditor';
 export { BlogDashboard } from './BlogDashboard/BlogDashboard';
 export { TemplateManagement } from './TemplateManagement/TemplateManagement';
+export { StudentProgress } from './StudentProgress/StudentProgress';

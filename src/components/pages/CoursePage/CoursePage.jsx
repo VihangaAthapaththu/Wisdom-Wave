@@ -14,6 +14,7 @@ import { useMyStudent } from '@/hooks';
 import { useEnrollInCourse } from '@/hooks';
 import { useCreatePayment } from '@/hooks';
 import { useCourseMaterials, useAddMaterial, useDeleteMaterial } from '@/hooks';
+import { useCourseProgress, useMarkMaterialComplete, useUnmarkMaterialComplete } from '@/hooks';
 import {
   useCourseAssignments,
   useCreateAssignment,
@@ -160,10 +161,17 @@ function Tab({ active, onClick, icon: Icon, children }) {
 
 // ─── Materials Tab ────────────────────────────────────────────────────────
 
-function MaterialsTab({ courseId, canManage }) {
+function MaterialsTab({ courseId, canManage, isStudent }) {
   const { data: materials = [], isLoading } = useCourseMaterials(courseId);
+  const { data: courseProgress } = useCourseProgress(isStudent ? courseId : null);
+  const markComplete = useMarkMaterialComplete();
+  const unmarkComplete = useUnmarkMaterialComplete();
   const addMaterial = useAddMaterial();
   const deleteMaterial = useDeleteMaterial();
+
+  const completedIds = new Set(
+    (courseProgress?.materials || []).filter((m) => m.completed).map((m) => m.materialId)
+  );
 
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ title: '', fileUrl: '' });
@@ -225,12 +233,43 @@ function MaterialsTab({ courseId, canManage }) {
     }
   };
 
+  const handleToggleComplete = (material) => {
+    const done = completedIds.has(material._id);
+    if (done) {
+      unmarkComplete.mutate({ courseId, materialId: material._id });
+    } else {
+      markComplete.mutate({ courseId, materialId: material._id });
+    }
+  };
+
   if (isLoading) {
     return <div className="flex justify-center py-12"><Loader2 className="animate-spin text-primary" size={28} /></div>;
   }
 
+  const progressPct = courseProgress?.progressPercentage ?? 0;
+  const completedCount = completedIds.size;
+  const totalCount = materials.length;
+
   return (
     <div>
+      {isStudent && courseProgress && (
+        <div className="mb-5 bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-semibold text-gray-700">Course Progress</span>
+            <span className="text-sm font-bold text-primary">{progressPct}%</span>
+          </div>
+          <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
+            <div
+              className="h-full rounded-full bg-primary transition-all duration-500"
+              style={{ width: `${progressPct}%` }}
+            />
+          </div>
+          <p className="text-xs text-gray-400 mt-1.5">
+            {completedCount}/{totalCount} materials completed
+          </p>
+        </div>
+      )}
+
       {canManage && (
         <div className="flex justify-end mb-4">
           <Button onClick={openModal} className="flex items-center gap-2 bg-gradient-to-r from-primary to-primary-600 text-white px-4 py-2 rounded-xl font-semibold text-sm shadow-md hover:shadow-lg transition-all">
@@ -298,6 +337,20 @@ function MaterialsTab({ courseId, canManage }) {
                         className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary-600 border border-primary/30 hover:border-primary px-3 py-1.5 rounded-lg transition-colors bg-transparent cursor-pointer"
                       >
                         <Download size={13} /> Download
+                      </button>
+                    )}
+                    {isStudent && (
+                      <button
+                        onClick={() => handleToggleComplete(m)}
+                        disabled={markComplete.isPending || unmarkComplete.isPending}
+                        className={`inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors border bg-transparent cursor-pointer disabled:opacity-50 ${
+                          completedIds.has(m._id)
+                            ? 'text-emerald-700 border-emerald-200 bg-emerald-50 hover:bg-emerald-100'
+                            : 'text-gray-500 border-gray-200 hover:border-primary/40 hover:text-primary'
+                        }`}
+                      >
+                        <CheckCircle size={13} className={completedIds.has(m._id) ? 'text-emerald-600' : 'text-gray-300'} />
+                        {completedIds.has(m._id) ? 'Done' : 'Mark done'}
                       </button>
                     )}
                     {canManage && (
@@ -1218,7 +1271,7 @@ export function CoursePage() {
         )}
 
         {canAccessContent && activeTab === 'materials' && (
-          <MaterialsTab courseId={id} canManage={canManage} />
+          <MaterialsTab courseId={id} canManage={canManage} isStudent={isStudent} />
         )}
 
         {canAccessContent && activeTab === 'assignments' && (

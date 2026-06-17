@@ -8,8 +8,9 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/context";
 import { ProtectedRoute } from "@/components";
-import { ClientNavbar } from "@/components";
+import { ClientNavbar, ChatWidget } from "@/components";
 import { PageLoader } from "@/components";
+import { useSocketManager } from "@/hooks";
 
 // Code-split all pages — only load the bundle when the route is visited
 const LandingPage        = lazy(() => import("@/components/pages/LandingPage").then(m => ({ default: m.LandingPage })));
@@ -38,6 +39,7 @@ const BlogDetail         = lazy(() => import("@/components/pages/BlogDetail/Blog
 const BlogEditor         = lazy(() => import("@/components/pages/BlogEditor/BlogEditor").then(m => ({ default: m.BlogEditor })));
 const BlogDashboard      = lazy(() => import("@/components/pages/BlogDashboard/BlogDashboard").then(m => ({ default: m.BlogDashboard })));
 const TemplateManagement = lazy(() => import("@/components/pages/TemplateManagement/TemplateManagement").then(m => ({ default: m.TemplateManagement })));
+const StudentProgress    = lazy(() => import("@/components/pages/StudentProgress/StudentProgress").then(m => ({ default: m.StudentProgress })));
 
 import "./App.css";
 import { Toaster } from "sonner";
@@ -54,12 +56,14 @@ const queryClient = new QueryClient({
 });
 
 function ClientLayout() {
+  useSocketManager();
   return (
     <div className="client-layout">
       <ClientNavbar />
       <main className="client-main">
         <Outlet />
       </main>
+      <ChatWidget />
     </div>
   );
 }
@@ -97,8 +101,15 @@ function App() {
               <Route element={<ProtectedRoute roles={["STUDENT", "ADMIN"]} />}>
                 <Route element={<ClientLayout />}>
                   <Route path="/student-dashboard" element={<StudentDashboard />} />
+                  <Route path="/student-dashboard/progress" element={<StudentProgress />} />
                   <Route path="/student-dashboard/blog" element={<BlogDashboard />} />
                   <Route path="/lessons/:id" element={<LessonPage />} />
+                </Route>
+              </Route>
+
+              {/* Shared: messages + notifications for students & lecturers */}
+              <Route element={<ProtectedRoute roles={["STUDENT", "ADMIN", "LECTURER"]} />}>
+                <Route element={<ClientLayout />}>
                   <Route path="/messages" element={<MessagePortal />} />
                   <Route path="/notifications" element={<Notification />} />
                 </Route>
@@ -123,6 +134,7 @@ function App() {
                 <Route path="/lecturer-dashboard/courses" element={<CourseManagement />} />
                 <Route path="/lecturer-dashboard/blog" element={<BlogDashboard />} />
               </Route>
+
             </Routes>
           </Suspense>
           <Toaster position="bottom-right" />

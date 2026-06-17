@@ -7,3 +7,5 @@ export { ContactInfoItem } from './ContactInfoItem';
 export { CourseCard } from './CourseCard';
 export { LecturerCoursesList } from './LecturerCoursesList';
 export { RichTextEditor } from './RichTextEditor/RichTextEditor';
+export { InsightCard } from './InsightCard/InsightCard';
+export { NotificationBell } from './NotificationBell';
