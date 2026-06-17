@@ -7,3 +7,4 @@ export * from './payments';
 export * from './assignments';
 export * from './materials';
 export * from './admin';
+export * from './blogs';

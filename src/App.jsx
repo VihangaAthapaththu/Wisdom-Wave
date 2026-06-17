@@ -34,6 +34,10 @@ const ReportManagement   = lazy(() => import("@/components/pages/ReportManagemen
 const Notification       = lazy(() => import("@/components/pages/Notification").then(m => ({ default: m.Notification })));
 const LecturerDashboard  = lazy(() => import("@/components/pages/LecturerDashboard").then(m => ({ default: m.LecturerDashboard })));
 const LecturerManagement = lazy(() => import("@/components/pages/LecturerManagement").then(m => ({ default: m.LecturerManagement })));
+const BlogDetail         = lazy(() => import("@/components/pages/BlogDetail/BlogDetail").then(m => ({ default: m.BlogDetail })));
+const BlogEditor         = lazy(() => import("@/components/pages/BlogEditor/BlogEditor").then(m => ({ default: m.BlogEditor })));
+const BlogDashboard      = lazy(() => import("@/components/pages/BlogDashboard/BlogDashboard").then(m => ({ default: m.BlogDashboard })));
+const TemplateManagement = lazy(() => import("@/components/pages/TemplateManagement/TemplateManagement").then(m => ({ default: m.TemplateManagement })));
 
 import "./App.css";
 import { Toaster } from "sonner";
@@ -78,12 +82,22 @@ function App() {
                 <Route path="/payments/success" element={<PaymentSuccess />} />
                 <Route path="/payments/cancel" element={<PaymentCancel />} />
                 <Route path="/blog" element={<BlogStudent />} />
+                <Route path="/blog/:slug" element={<BlogDetail />} />
+              </Route>
+
+              {/* Blog author routes — STUDENT, LECTURER, and ADMIN can write */}
+              <Route element={<ProtectedRoute roles={["STUDENT", "LECTURER", "ADMIN"]} />}>
+                <Route element={<ClientLayout />}>
+                  <Route path="/blog/new" element={<BlogEditor />} />
+                  <Route path="/blog/:id/edit" element={<BlogEditor />} />
+                </Route>
               </Route>
 
               {/* Protected student routes */}
               <Route element={<ProtectedRoute roles={["STUDENT", "ADMIN"]} />}>
                 <Route element={<ClientLayout />}>
                   <Route path="/student-dashboard" element={<StudentDashboard />} />
+                  <Route path="/student-dashboard/blog" element={<BlogDashboard />} />
                   <Route path="/lessons/:id" element={<LessonPage />} />
                   <Route path="/messages" element={<MessagePortal />} />
                   <Route path="/notifications" element={<Notification />} />
@@ -99,6 +113,7 @@ function App() {
                 <Route path="/dashboard/lecturers" element={<LecturerManagement />} />
                 <Route path="/dashboard/payments" element={<PaymentManagement />} />
                 <Route path="/dashboard/blog" element={<BlogManagement />} />
+                <Route path="/dashboard/templates" element={<TemplateManagement />} />
                 <Route path="/dashboard/reports" element={<ReportManagement />} />
               </Route>
 
@@ -106,7 +121,7 @@ function App() {
               <Route element={<ProtectedRoute roles={["LECTURER"]} />}>
                 <Route path="/lecturer-dashboard" element={<LecturerDashboard />} />
                 <Route path="/lecturer-dashboard/courses" element={<CourseManagement />} />
-                <Route path="/lecturer-dashboard/blog" element={<BlogManagement />} />
+                <Route path="/lecturer-dashboard/blog" element={<BlogDashboard />} />
               </Route>
             </Routes>
           </Suspense>

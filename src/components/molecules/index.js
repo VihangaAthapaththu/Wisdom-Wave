@@ -6,3 +6,4 @@ export { ArticleCard } from './ArticleCard';
 export { ContactInfoItem } from './ContactInfoItem';
 export { CourseCard } from './CourseCard';
 export { LecturerCoursesList } from './LecturerCoursesList';
+export { RichTextEditor } from './RichTextEditor/RichTextEditor';

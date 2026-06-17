@@ -18,3 +18,7 @@ export { StudentEnrollments } from './StudentEnrollments';
 export { StudentManagement } from './StudentManagement';
 export { LecturerDashboard } from './LecturerDashboard';
 export { LecturerManagement } from './LecturerManagement';
+export { BlogDetail } from './BlogDetail/BlogDetail';
+export { BlogEditor } from './BlogEditor/BlogEditor';
+export { BlogDashboard } from './BlogDashboard/BlogDashboard';
+export { TemplateManagement } from './TemplateManagement/TemplateManagement';

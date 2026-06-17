@@ -7,3 +7,4 @@ export { paymentService } from "./paymentService";
 export { assignmentService } from "./assignmentService";
 export { materialService } from "./materialService";
 export { adminService } from "./adminService";
+export { blogService } from "./blogService";

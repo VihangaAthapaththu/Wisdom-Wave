@@ -30,3 +30,4 @@ export {
 	ProgressLabel,
 	ProgressValue,
 } from './Progress';
+export { Spinner } from './Spinner'

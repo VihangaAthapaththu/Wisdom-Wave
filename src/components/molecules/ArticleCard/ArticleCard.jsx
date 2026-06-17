@@ -2,9 +2,9 @@ import React from 'react';
 import { BookOpen, Calendar, User, ArrowRight } from 'lucide-react';
 import { Card, Button } from '@/components';
 
-export function ArticleCard({ blog }) {
+export function ArticleCard({ blog, onClick }) {
   return (
-    <Card className="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-[rgba(255,165,0,0.05)] transition-all duration-300 hover:-translate-y-1 flex flex-col">
+    <Card onClick={onClick} className={`group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-[rgba(255,165,0,0.05)] transition-all duration-300 hover:-translate-y-1 flex flex-col${onClick ? ' cursor-pointer' : ''}`}>
       <div className="bg-primary/8 px-5 py-3.5 flex items-center justify-between border-b border-primary/10">
         <span className="inline-flex items-center gap-1.5 font-semibold text-primary text-xs uppercase tracking-wider">
           <BookOpen size={14} />
@@ -23,7 +23,7 @@ export function ArticleCard({ blog }) {
       </div>
 
       <div className="px-5 pb-5 pt-1">
-        <Button className="w-full bg-gradient-to-r from-primary to-primary-600 hover:from-primary-600 hover:to-primary text-white py-2.5 rounded-xl font-semibold text-sm shadow-md shadow-[rgba(255,165,0,0.15)] hover:shadow-lg hover:shadow-[rgba(255,165,0,0.25)] transition-all h-auto active:scale-[0.97] inline-flex items-center justify-center gap-2">
+        <Button className="cursor-pointer w-full bg-gradient-to-r from-primary to-primary-600 hover:from-primary-600 hover:to-primary text-white py-2.5 rounded-xl font-semibold text-sm shadow-md shadow-[rgba(255,165,0,0.15)] hover:shadow-lg hover:shadow-[rgba(255,165,0,0.25)] transition-all h-auto active:scale-[0.97] inline-flex items-center justify-center gap-2">
           Read more
           <ArrowRight size={15} />
         </Button>
