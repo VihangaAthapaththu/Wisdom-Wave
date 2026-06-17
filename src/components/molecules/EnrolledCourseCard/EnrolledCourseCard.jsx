@@ -1,10 +1,27 @@
 import React from 'react';
-import { BookOpen, Clock, Users, ChevronRight, FileText } from 'lucide-react';
+import { BookOpen, Clock, Users, ChevronRight, FileText, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-export function EnrolledCourseCard({ course }) {
+const STATUS_STYLES = {
+  COMPLETED:   'bg-emerald-50 text-emerald-700 border border-emerald-200',
+  IN_PROGRESS: 'bg-blue-50 text-blue-700 border border-blue-200',
+  NOT_STARTED: 'bg-gray-50 text-gray-500 border border-gray-200',
+};
+
+const STATUS_LABELS = {
+  COMPLETED:   'Completed',
+  IN_PROGRESS: 'In Progress',
+  NOT_STARTED: 'Not Started',
+};
+
+export function EnrolledCourseCard({ course, progressData }) {
   const navigate = useNavigate();
   const isFree = !course.fee || Number(course.fee) === 0;
+
+  const pct   = progressData?.progressPercentage ?? null;
+  const status = progressData?.status ?? null;
+  const completedMaterials = progressData?.completedMaterials ?? 0;
+  const totalMaterials     = progressData?.totalMaterials ?? 0;
 
   return (
     <div
@@ -68,10 +85,34 @@ export function EnrolledCourseCard({ course }) {
         </div>
       </div>
 
+      {/* Progress bar (shown when progressData is available) */}
+      {pct !== null && (
+        <div className="mt-4 pt-3 border-t border-gray-50">
+          <div className="flex items-center justify-between mb-1.5">
+            <div className="flex items-center gap-1.5">
+              {status === 'COMPLETED' && <CheckCircle2 size={13} className="text-emerald-500" />}
+              <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_STYLES[status] || STATUS_STYLES.NOT_STARTED}`}>
+                {STATUS_LABELS[status] || 'Not Started'}
+              </span>
+            </div>
+            <span className="text-xs font-bold text-primary">{pct}%</span>
+          </div>
+          <div className="h-1.5 w-full rounded-full bg-gray-100 overflow-hidden">
+            <div
+              className="h-full rounded-full bg-primary transition-all duration-500"
+              style={{ width: `${pct}%` }}
+            />
+          </div>
+          {totalMaterials > 0 && (
+            <p className="text-xs text-gray-400 mt-1">{completedMaterials}/{totalMaterials} lessons done</p>
+          )}
+        </div>
+      )}
+
       {/* Continue button */}
-      <div className="mt-4 pt-3 border-t border-gray-50 flex justify-end">
+      <div className={`${pct !== null ? 'mt-3' : 'mt-4 pt-3 border-t border-gray-50'} flex justify-end`}>
         <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary group-hover:gap-2.5 transition-all duration-200">
-          Continue Learning <ChevronRight size={13} />
+          {status === 'COMPLETED' ? 'Review Course' : 'Continue Learning'} <ChevronRight size={13} />
         </span>
       </div>
     </div>

@@ -1,4 +1,5 @@
 export * from './auth';
+export { useSocketManager } from './useSocketManager';
 export * from './courses';
 export * from './lecturers';
 export * from './students';
@@ -8,3 +9,6 @@ export * from './assignments';
 export * from './materials';
 export * from './admin';
 export * from './blogs';
+export * from './progress';
+export * from './notifications';
+export * from './chat';

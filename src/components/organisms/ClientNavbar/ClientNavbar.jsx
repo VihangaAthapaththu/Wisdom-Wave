@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from "@/context";
 import { Menu, X, LogOut, ChevronDown } from 'lucide-react';
+import { NotificationBell } from '@/components/molecules';
 
 export function ClientNavbar() {
   const { user, logout } = useAuth();
@@ -68,6 +69,7 @@ export function ClientNavbar() {
           <div className="hidden md:flex items-center gap-4">
             {user ? (
               <>
+                <NotificationBell />
                 <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-full border border-gray-100">
                   <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-primary-600 flex items-center justify-center text-white text-xs font-bold">
                     {user.name?.charAt(0)?.toUpperCase()}
