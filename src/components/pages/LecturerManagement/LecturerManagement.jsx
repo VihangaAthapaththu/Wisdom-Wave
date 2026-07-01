@@ -5,6 +5,9 @@ import { Button, Card, Table, TableBody, TableCell, TableHead, TableHeader, Tabl
 import { PageHeader } from '@/components/molecules';
 import { useLecturers, useRegisterLecturer, useDeactivateLecturer } from '@/hooks/lecturers/useLecturers';
 import { ConfirmationModal } from '@/components';
+import { getApiError, toastApiError } from '@/lib/api/errorUtils';
+import { validateForm } from '@/lib/validation/validateForm';
+import { lecturerSchema } from '@/lib/validation/schemas';
 
 export function LecturerManagement() {
   const { data: lecturers = [], isLoading } = useLecturers();
@@ -35,20 +38,24 @@ export function LecturerManagement() {
     e.preventDefault();
     setFormError('');
     setFieldErrors([]);
-    setIsSubmitting(true);
 
+    const { success, errors } = validateForm(lecturerSchema, formData);
+    if (!success) {
+      setFieldErrors(Object.entries(errors).map(([field, message]) => ({ field, message })));
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
       await registerLecturer.mutateAsync(formData);
       toast.success('Lecturer registered successfully!');
       setFormData({ name: '', email: '', password: '', specialization: '' });
       setShowModal(false);
     } catch (err) {
-      const response = err.response?.data;
-      if (response?.errors) {
-        setFieldErrors(response.errors);
-      } else {
-        setFormError(response?.message || 'Registration failed. Please try again.');
-      }
+      const { status, message, fieldErrors: fe } = getApiError(err, 'Registration failed. Please try again.');
+      const feArr = Object.entries(fe).map(([field, m]) => ({ field, message: m }));
+      if (feArr.length) setFieldErrors(feArr);
+      else setFormError(status ? `${message} (Error ${status})` : message);
     } finally {
       setIsSubmitting(false);
     }
@@ -62,7 +69,7 @@ export function LecturerManagement() {
       toast.success('Lecturer deactivated.');
       setDeactivateTarget(null);
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to deactivate lecturer.');
+      toastApiError(err, 'Failed to deactivate lecturer.');
     } finally {
       setIsDeactivating(false);
     }

@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context';
 import { Eye, EyeOff } from 'lucide-react';
+import { validateForm } from '@/lib/validation/validateForm';
+import { signInSchema } from '@/lib/validation/schemas';
+import { getApiError } from '@/lib/api/errorUtils';
 
 /* ── Tiny animated dot canvas ── */
 function DotCanvas() {
@@ -91,7 +94,13 @@ export function SignIn() {
     e.preventDefault();
     setError(''); setFieldErrors([]);
     setTouched({ email: true, password: true });
-    if (!form.email || !form.password) { setError('All fields are required.'); return; }
+
+    const { success, errors } = validateForm(signInSchema, { email: form.email, password: form.password });
+    if (!success) {
+      setFieldErrors(Object.entries(errors).map(([field, message]) => ({ field, message })));
+      return;
+    }
+
     setLoading(true);
     try {
       const user = await login(form.email, form.password);
@@ -99,9 +108,12 @@ export function SignIn() {
       else if(user.role === 'LECTURER') navigate('/lecturer-dashboard');
       else navigate('/student-dashboard');
     } catch (err) {
-      const res = err.response?.data;
-      if (res?.errors) setFieldErrors(res.errors);
-      else setError(res?.message || 'Login failed. Please try again.');
+      const { status, message, fieldErrors: fe } = getApiError(err, 'Login failed. Please try again.');
+      if (Object.keys(fe).length) {
+        setFieldErrors(Object.entries(fe).map(([field, m]) => ({ field, message: m })));
+      } else {
+        setError(status ? `${message} (Error ${status})` : message);
+      }
     } finally { setLoading(false); }
   };
 

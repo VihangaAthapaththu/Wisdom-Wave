@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, Loader2 } from 'lucide-react';
 import { Button, Card } from '@/components';
 import { ContactInfoItem } from '@/components/molecules';
+import { toast } from 'sonner';
+import { contactService } from '@/lib/api/contactService';
+import { validateForm } from '@/lib/validation/validateForm';
+import { contactSchema } from '@/lib/validation/schemas';
+import { toastApiError } from '@/lib/api/errorUtils';
 
 export function Contact() {
   const [formData, setFormData] = useState({
@@ -10,19 +15,37 @@ export function Contact() {
     subject: '',
     message: ''
   });
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    if (fieldErrors[name]) setFieldErrors(prev => ({ ...prev, [name]: undefined }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Contact form submitted:', formData);
-    setFormData({ name: '', email: '', subject: '', message: '' });
+    const { success, errors } = validateForm(contactSchema, formData);
+    if (!success) {
+      setFieldErrors(errors);
+      return;
+    }
+    setFieldErrors({});
+    try {
+      setSubmitting(true);
+      const res = await contactService.send(formData);
+      toast.success(res?.message || 'Your message has been sent.');
+      setFormData({ name: '', email: '', subject: '', message: '' });
+    } catch (err) {
+      toastApiError(err, 'Failed to send message. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const inputClass = "w-full px-4 py-2.5 border border-border rounded-xl text-sm text-gray-900 bg-white transition-all duration-200 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 placeholder:text-gray-400";
+  const errorClass = "text-xs text-danger mt-1";
 
   return (
     <div className="bg-gray-50/50 min-h-screen flex flex-col">
@@ -64,27 +87,31 @@ export function Contact() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
                   <label htmlFor="name" className="text-sm font-medium text-gray-700">Full Name</label>
-                  <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} placeholder="Your full name" className={inputClass} required />
+                  <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} placeholder="Your full name" className={inputClass} aria-invalid={!!fieldErrors.name} />
+                  {fieldErrors.name && <p className={errorClass}>{fieldErrors.name}</p>}
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label htmlFor="email" className="text-sm font-medium text-gray-700">Email Address</label>
-                  <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} placeholder="your@email.com" className={inputClass} required />
+                  <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} placeholder="your@email.com" className={inputClass} aria-invalid={!!fieldErrors.email} />
+                  {fieldErrors.email && <p className={errorClass}>{fieldErrors.email}</p>}
                 </div>
               </div>
 
               <div className="flex flex-col gap-1.5">
                 <label htmlFor="subject" className="text-sm font-medium text-gray-700">Subject</label>
-                <input type="text" id="subject" name="subject" value={formData.subject} onChange={handleChange} placeholder="What is this about?" className={inputClass} required />
+                <input type="text" id="subject" name="subject" value={formData.subject} onChange={handleChange} placeholder="What is this about?" className={inputClass} aria-invalid={!!fieldErrors.subject} />
+                {fieldErrors.subject && <p className={errorClass}>{fieldErrors.subject}</p>}
               </div>
 
               <div className="flex flex-col gap-1.5">
                 <label htmlFor="message" className="text-sm font-medium text-gray-700">Message</label>
-                <textarea id="message" name="message" value={formData.message} onChange={handleChange} placeholder="Write your message here..." className={`${inputClass} resize-y min-h-[120px]`} required />
+                <textarea id="message" name="message" value={formData.message} onChange={handleChange} placeholder="Write your message here..." className={`${inputClass} resize-y min-h-[120px]`} aria-invalid={!!fieldErrors.message} />
+                {fieldErrors.message && <p className={errorClass}>{fieldErrors.message}</p>}
               </div>
 
-              <Button type="submit" className="mt-2 bg-gradient-to-r from-primary to-primary-600 hover:from-primary-600 hover:to-primary text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-md shadow-[rgba(255,165,0,0.15)] hover:shadow-lg hover:shadow-[rgba(255,165,0,0.25)] transition-all h-auto active:scale-[0.97] inline-flex items-center gap-2 self-start">
-                <Send size={16} />
-                Send Message
+              <Button type="submit" disabled={submitting} className="mt-2 bg-gradient-to-r from-primary to-primary-600 hover:from-primary-600 hover:to-primary text-white px-6 py-3 rounded-xl font-semibold text-sm shadow-md shadow-[rgba(255,165,0,0.15)] hover:shadow-lg hover:shadow-[rgba(255,165,0,0.25)] transition-all h-auto active:scale-[0.97] inline-flex items-center gap-2 self-start disabled:opacity-60 disabled:cursor-not-allowed">
+                {submitting ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+                {submitting ? 'Sending...' : 'Send Message'}
               </Button>
             </form>
           </Card>

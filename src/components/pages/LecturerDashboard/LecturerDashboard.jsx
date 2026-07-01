@@ -103,7 +103,7 @@ export function LecturerDashboard() {
                 href="/lecturer-dashboard/courses"
                 icon={BookOpen}
                 title="My Courses"
-                description="Manage your assigned courses"
+                description="View your assigned courses & materials"
               />
               <MenuCard
                 href="/lecturer-dashboard/blog"

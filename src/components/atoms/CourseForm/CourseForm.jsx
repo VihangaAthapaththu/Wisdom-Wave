@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components';
 import { useLecturers } from '@/hooks';
+import { validateForm } from '@/lib/validation/validateForm';
+import { courseSchema } from '@/lib/validation/schemas';
+import { getApiError } from '@/lib/api/errorUtils';
 
 export function CourseForm({
   initialValues = {},
@@ -31,24 +34,10 @@ export function CourseForm({
     setFormError('');
     setFieldErrors([]);
 
-    // Basic client-side validation
-    if (!title || title.trim().length < 3) {
-      setFieldErrors([{ field: 'title', message: 'Title is required and must be at least 3 characters' }]);
-      return;
-    }
-
-    if (duration !== '' && Number(duration) < 0) {
-      setFieldErrors([{ field: 'duration', message: 'Duration must be a positive number' }]);
-      return;
-    }
-
-    if (fee !== '' && Number(fee) < 0) {
-      setFieldErrors([{ field: 'fee', message: 'Fee must be a positive number' }]);
-      return;
-    }
-
-    if (lecturerId && !String(lecturerId).trim()) {
-      setFieldErrors([{ field: 'lecturer', message: 'Lecturer must be selected' }]);
+    // Client-side validation (Zod)
+    const { success, errors } = validateForm(courseSchema, { title, description, duration, fee });
+    if (!success) {
+      setFieldErrors(Object.entries(errors).map(([field, message]) => ({ field, message })));
       return;
     }
 
@@ -64,12 +53,10 @@ export function CourseForm({
     try {
       await onSubmit(payload);
     } catch (err) {
-      const response = err?.response?.data;
-      if (response?.errors) {
-        setFieldErrors(response.errors);
-      } else {
-        setFormError(response?.message || 'Failed to save course');
-      }
+      const { status, message, fieldErrors: fe } = getApiError(err, 'Failed to save course');
+      const feArr = Object.entries(fe).map(([field, m]) => ({ field, message: m }));
+      if (feArr.length) setFieldErrors(feArr);
+      else setFormError(status ? `${message} (Error ${status})` : message);
     }
   };
 
@@ -132,7 +119,7 @@ export function CourseForm({
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-semibold text-text-strong">Fee (USD)</label>
+          <label className="text-sm font-semibold text-text-strong">Fee (LKR)</label>
           <input
             type="number"
             min="0"

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { BookOpen, Edit, Trash2, Eye, Users, Clock, DollarSign } from "lucide-react";
+import { BookOpen, Edit, Trash2, Eye, Users, Clock, Wallet } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -21,6 +21,8 @@ import {
   useDeleteCourse,
 } from "@/hooks";
 import { toast } from "sonner";
+import { toastApiError } from "@/lib/api/errorUtils";
+import { formatLKR } from "@/lib/currency";
 
 function StatusBadge({ published }) {
   return published ? (
@@ -38,10 +40,9 @@ function StatusBadge({ published }) {
 
 export function CourseManagement() {
   const { user } = useAuth();
+  const isAdmin = user?.role === "ADMIN";
   const navigate = useNavigate();
-  const { data: courses = [], isLoading } = useCourses(
-    user && user.role === "ADMIN",
-  );
+  const { data: courses = [], isLoading } = useCourses(isAdmin);
   const [showModal, setShowModal] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -59,9 +60,7 @@ export function CourseManagement() {
       toast.success("Course deleted");
       setDeleteTarget(null);
     } catch (err) {
-      const response = err?.response?.data;
-      toast.error(response?.message || "Failed to delete course");
-      console.error("Failed to delete course:", err);
+      toastApiError(err, "Failed to delete course");
     } finally {
       setIsDeleting(false);
     }
@@ -71,11 +70,15 @@ export function CourseManagement() {
     <div className="bg-bg-paper min-h-screen p-4 md:p-6 lg:p-10 flex flex-col">
       <PageHeader
         title="Course Management"
-        buttonText="Add Course"
-        onButtonClick={() => {
-          setSelectedCourse(null);
-          setShowModal(true);
-        }}
+        buttonText={isAdmin ? "Add Course" : undefined}
+        onButtonClick={
+          isAdmin
+            ? () => {
+                setSelectedCourse(null);
+                setShowModal(true);
+              }
+            : undefined
+        }
       />
 
       {isLoading ? (
@@ -104,7 +107,7 @@ export function CourseManagement() {
                   </TableHead>
                   <TableHead className="font-semibold text-gray-600 text-xs uppercase tracking-wider px-5 py-3.5 whitespace-nowrap">
                     <span className="flex items-center gap-1.5">
-                      <DollarSign size={13} /> Fee
+                      <Wallet size={13} /> Fee
                     </span>
                   </TableHead>
                   <TableHead className="font-semibold text-gray-600 text-xs uppercase tracking-wider px-5 py-3.5 whitespace-nowrap">
@@ -175,7 +178,7 @@ export function CourseManagement() {
                       <TableCell className="px-5 py-4 text-sm text-gray-700 whitespace-nowrap font-medium">
                         {course.fee != null && course.fee > 0 ? (
                           <span className="text-gray-800">
-                            ${Number(course.fee).toLocaleString()}
+                            {formatLKR(course.fee)}
                           </span>
                         ) : (
                           <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-600 border border-blue-200">
@@ -199,23 +202,27 @@ export function CourseManagement() {
                           >
                             <Eye size={15} />
                           </button>
-                          <button
-                            title="Edit"
-                            onClick={() => {
-                              setSelectedCourse(course);
-                              setShowModal(true);
-                            }}
-                            className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-150 cursor-pointer"
-                          >
-                            <Edit size={15} />
-                          </button>
-                          <button
-                            title="Delete"
-                            onClick={() => setDeleteTarget(course)}
-                            className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors duration-150 cursor-pointer"
-                          >
-                            <Trash2 size={15} />
-                          </button>
+                          {isAdmin && (
+                            <>
+                              <button
+                                title="Edit"
+                                onClick={() => {
+                                  setSelectedCourse(course);
+                                  setShowModal(true);
+                                }}
+                                className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-150 cursor-pointer"
+                              >
+                                <Edit size={15} />
+                              </button>
+                              <button
+                                title="Delete"
+                                onClick={() => setDeleteTarget(course)}
+                                className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors duration-150 cursor-pointer"
+                              >
+                                <Trash2 size={15} />
+                              </button>
+                            </>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -233,51 +240,53 @@ export function CourseManagement() {
         </div>
       )}
 
-      <CourseModal
-        open={showModal}
-        title={selectedCourse ? "Edit Course" : "Add Course"}
-        initialValues={selectedCourse || {}}
-        onClose={() => {
-          setShowModal(false);
-          setSelectedCourse(null);
-        }}
-        onSave={async (payload) => {
-          try {
-            setIsSaving(true);
-            const wasUpdate = !!selectedCourse;
-            if (wasUpdate) {
-              await updateCourse.mutateAsync({
-                id: selectedCourse._id || selectedCourse.id,
-                payload,
-              });
-            } else {
-              await createCourse.mutateAsync(payload);
-            }
-            setShowModal(false);
-            setSelectedCourse(null);
-            toast.success(wasUpdate ? "Course updated" : "Course created");
-          } catch (err) {
-            const response = err?.response?.data;
-            console.error(err);
-            toast.error(response?.message || "Failed to save course");
-            throw err;
-          } finally {
-            setIsSaving(false);
-          }
-        }}
-        isSubmitting={isSaving}
-      />
+      {isAdmin && (
+        <>
+          <CourseModal
+            open={showModal}
+            title={selectedCourse ? "Edit Course" : "Add Course"}
+            initialValues={selectedCourse || {}}
+            onClose={() => {
+              setShowModal(false);
+              setSelectedCourse(null);
+            }}
+            onSave={async (payload) => {
+              try {
+                setIsSaving(true);
+                const wasUpdate = !!selectedCourse;
+                if (wasUpdate) {
+                  await updateCourse.mutateAsync({
+                    id: selectedCourse._id || selectedCourse.id,
+                    payload,
+                  });
+                } else {
+                  await createCourse.mutateAsync(payload);
+                }
+                setShowModal(false);
+                setSelectedCourse(null);
+                toast.success(wasUpdate ? "Course updated" : "Course created");
+              } catch (err) {
+                toastApiError(err, "Failed to save course");
+                throw err;
+              } finally {
+                setIsSaving(false);
+              }
+            }}
+            isSubmitting={isSaving}
+          />
 
-      <ConfirmationModal
-        open={!!deleteTarget}
-        title="Delete course?"
-        description={`This will permanently delete "${deleteTarget?.title || "the selected course"}". This action cannot be undone.`}
-        confirmText="Delete"
-        cancelText="Keep course"
-        onCancel={() => setDeleteTarget(null)}
-        onConfirm={handleDelete}
-        isConfirming={isDeleting}
-      />
+          <ConfirmationModal
+            open={!!deleteTarget}
+            title="Delete course?"
+            description={`This will permanently delete "${deleteTarget?.title || "the selected course"}". This action cannot be undone.`}
+            confirmText="Delete"
+            cancelText="Keep course"
+            onCancel={() => setDeleteTarget(null)}
+            onConfirm={handleDelete}
+            isConfirming={isDeleting}
+          />
+        </>
+      )}
     </div>
   );
 }

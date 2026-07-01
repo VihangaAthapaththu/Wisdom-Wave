@@ -27,6 +27,8 @@ import {
   useGradeSubmission,
 } from '@/hooks';
 import { toast } from 'sonner';
+import { formatLKR } from '@/lib/currency';
+import { toastApiError, getApiError } from '@/lib/api/errorUtils';
 
 // ─── helpers ───────────────────────────────────────────────────────────────
 
@@ -213,7 +215,7 @@ function MaterialsTab({ courseId, canManage, isStudent }) {
       toast.success('Material added successfully.');
       setShowModal(false);
     } catch (err) {
-      setFormError(err?.response?.data?.message || 'Failed to add material.');
+      setFormError(getApiError(err, 'Failed to add material.').message);
     } finally {
       setIsSubmitting(false);
     }
@@ -227,7 +229,7 @@ function MaterialsTab({ courseId, canManage, isStudent }) {
       toast.success('Material deleted.');
       setDeleteTarget(null);
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to delete material.');
+      toastApiError(err, 'Failed to delete material.');
     } finally {
       setIsDeleting(false);
     }
@@ -476,7 +478,7 @@ function SubmissionsModal({ assignment, onClose }) {
       toast.success('Submission graded.');
       setGrading(null);
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to grade submission.');
+      toastApiError(err, 'Failed to grade submission.');
     } finally {
       setSaving(false);
     }
@@ -654,7 +656,7 @@ function AssignmentsTab({ courseId, canManage, isStudent }) {
       setShowCreateModal(false);
       setCreateForm({ title: '', description: '', dueDate: '' });
     } catch (err) {
-      setCreateError(err?.response?.data?.message || 'Failed to create assignment.');
+      setCreateError(getApiError(err, 'Failed to create assignment.').message);
     } finally {
       setIsCreating(false);
     }
@@ -668,7 +670,7 @@ function AssignmentsTab({ courseId, canManage, isStudent }) {
       toast.success('Assignment deleted.');
       setDeleteTarget(null);
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to delete assignment.');
+      toastApiError(err, 'Failed to delete assignment.');
     } finally {
       setIsDeleting(false);
     }
@@ -700,7 +702,7 @@ function AssignmentsTab({ courseId, canManage, isStudent }) {
       toast.success('Assignment updated.');
       setEditTarget(null);
     } catch (err) {
-      setEditError(err?.response?.data?.message || 'Failed to update assignment.');
+      setEditError(getApiError(err, 'Failed to update assignment.').message);
     } finally {
       setIsSavingEdit(false);
     }
@@ -721,7 +723,7 @@ function AssignmentsTab({ courseId, canManage, isStudent }) {
       setSubmitTarget(null);
       setSubmitFile(null);
     } catch (err) {
-      setSubmitError(err?.response?.data?.message || 'Failed to submit assignment.');
+      setSubmitError(getApiError(err, 'Failed to submit assignment.').message);
     } finally {
       setIsSubmittingAssignment(false);
     }
@@ -733,7 +735,7 @@ function AssignmentsTab({ courseId, canManage, isStudent }) {
       await deleteMySubmission.mutateAsync({ id: assignmentId, courseId });
       toast.success('Submission removed.');
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to remove submission.');
+      toastApiError(err, 'Failed to remove submission.');
     } finally {
       setRemovingId(null);
     }
@@ -1086,8 +1088,7 @@ export function CoursePage() {
         toast.error('Payment gateway is not available. Please contact support.');
       }
     } catch (err) {
-      const msg = err?.response?.data?.message || 'Enrollment failed. Please try again.';
-      toast.error(msg);
+      toastApiError(err, 'Enrollment failed. Please try again.');
     } finally {
       setEnrolling(false);
     }
@@ -1134,7 +1135,7 @@ export function CoursePage() {
                 {isFree ? (
                   <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700">Free</span>
                 ) : (
-                  <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700">${course.fee}</span>
+                  <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700">{formatLKR(course.fee)}</span>
                 )}
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 leading-tight">{course.title}</h1>
@@ -1187,7 +1188,7 @@ export function CoursePage() {
                 <div className="space-y-3 text-sm mb-5">
                   <div className="flex items-center justify-between text-gray-500">
                     <span>Price</span>
-                    <span className="font-bold text-gray-900">{isFree ? 'Free' : `$${course.fee}`}</span>
+                    <span className="font-bold text-gray-900">{isFree ? 'Free' : formatLKR(course.fee)}</span>
                   </div>
                   <div className="flex items-center justify-between text-gray-500">
                     <span>Duration</span>
@@ -1216,7 +1217,7 @@ export function CoursePage() {
                       ) : (
                         <span className="flex items-center justify-center gap-2">
                           <CreditCard size={15} />
-                          Pay & Enroll — ${course.fee}
+                          Pay & Enroll — {formatLKR(course.fee)}
                         </span>
                       )}
                     </Button>

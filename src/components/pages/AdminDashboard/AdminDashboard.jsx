@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from "@/context";
 import { StatCard, MenuCard } from '@/components/molecules';
 import { useAdminStats } from '@/hooks';
+import { formatLKR } from '@/lib/currency';
 
 export function AdminDashboard() {
   const { user, logout } = useAuth();
@@ -23,7 +24,7 @@ export function AdminDashboard() {
     { icon: Users, label: 'Total Students', value: statsLoading ? '—' : (stats?.totalStudents ?? 0).toLocaleString() },
     { icon: BookOpen, label: 'Published Courses', value: statsLoading ? '—' : (stats?.publishedCourses ?? 0).toLocaleString() },
     { icon: FileText, label: 'Total Enrollments', value: statsLoading ? '—' : (stats?.totalEnrollments ?? 0).toLocaleString() },
-    { icon: BarChart3, label: 'Revenue', value: statsLoading ? '—' : `$${(stats?.totalRevenue ?? 0).toLocaleString()}` },
+    { icon: BarChart3, label: 'Revenue', value: statsLoading ? '—' : formatLKR(stats?.totalRevenue ?? 0) },
   ];
 
   return (

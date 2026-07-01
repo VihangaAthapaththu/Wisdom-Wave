@@ -4,6 +4,8 @@ import { Card, Button } from '@/components';
 import { useAuth } from '@/context';
 import { useMyStudent } from '@/hooks';
 import { useEnrollInCourse, useCreatePayment } from '@/hooks';
+import { formatLKR } from '@/lib/currency';
+import { toastApiError } from '@/lib/api/errorUtils';
 import { toast } from 'sonner';
 
 export function CourseCard({ course }) {
@@ -83,7 +85,7 @@ export function CourseCard({ course }) {
                   toast.success(result?.message || 'Payment initiated. An admin will confirm your enrollment.');
                 }
               } catch (err) {
-                toast.error(err?.response?.data?.message || 'Enrollment failed.');
+                toastApiError(err, 'Enrollment failed.');
               } finally {
                 setEnrolling(false);
               }
@@ -99,7 +101,7 @@ export function CourseCard({ course }) {
             ) : isFree ? (
               'Enroll Now — Free'
             ) : (
-              `Enroll — $${course.fee}`
+              `Enroll — ${formatLKR(course.fee)}`
             )}
           </Button>
         ) : null}

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
   CreditCard, Search, RefreshCw, CheckCircle, XCircle,
-  Clock, DollarSign, TrendingUp, Filter,
+  Clock, Wallet, TrendingUp, Filter,
 } from 'lucide-react';
 import {
   Button,
@@ -9,6 +9,7 @@ import {
   PageHeader, PageLoader,
 } from '@/components';
 import { useAllPayments } from '@/hooks';
+import { formatLKR } from '@/lib/currency';
 import { toast } from 'sonner';
 
 const STATUS_CONFIG = {
@@ -75,10 +76,10 @@ export function PaymentManagement() {
       {/* Stats row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {[
-          { icon: DollarSign, label: 'Total Payments', value: stats.total, color: 'text-blue-600', bg: 'bg-blue-50' },
+          { icon: Wallet, label: 'Total Payments', value: stats.total, color: 'text-blue-600', bg: 'bg-blue-50' },
           { icon: CheckCircle, label: 'Successful', value: stats.paid, color: 'text-emerald-600', bg: 'bg-emerald-50' },
           { icon: Clock, label: 'Pending', value: stats.pending, color: 'text-amber-600', bg: 'bg-amber-50' },
-          { icon: TrendingUp, label: 'Total Revenue', value: `$${stats.revenue.toLocaleString()}`, color: 'text-primary', bg: 'bg-primary/5' },
+          { icon: TrendingUp, label: 'Total Revenue', value: formatLKR(stats.revenue), color: 'text-primary', bg: 'bg-primary/5' },
         ].map((s, i) => (
           <div key={i} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
             <div className={`w-10 h-10 rounded-xl ${s.bg} flex items-center justify-center shrink-0`}>
@@ -164,7 +165,7 @@ export function PaymentManagement() {
                       {p.course?.title || '—'}
                     </TableCell>
                     <TableCell className="p-4">
-                      <span className="font-bold text-gray-900 text-sm">${(p.amount || 0).toFixed(2)}</span>
+                      <span className="font-bold text-gray-900 text-sm">{formatLKR(p.amount)}</span>
                     </TableCell>
                     <TableCell className="p-4 text-sm text-gray-500">
                       {METHOD_LABEL[p.method] || p.method || '—'}

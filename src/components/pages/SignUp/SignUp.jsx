@@ -2,6 +2,9 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context';
 import { Eye, EyeOff } from 'lucide-react';
+import { validateForm } from '@/lib/validation/validateForm';
+import { signUpSchema } from '@/lib/validation/schemas';
+import { getApiError } from '@/lib/api/errorUtils';
 
 /* ── Light-beam keyframes injected once ─────────────────── */
 const BEAM_CSS = `
@@ -305,16 +308,24 @@ export function SignUp() {
     e.preventDefault();
     setError(''); setFieldErrors([]);
     setTouched({ fullName: true, email: true, password: true, confirmPassword: true });
-    if (form.password !== form.confirmPassword) { setError('Passwords do not match.'); return; }
-    if (!form.acceptTerms) { setError('Please accept the Terms of Service and Privacy Policy.'); return; }
+
+    const { success, errors } = validateForm(signUpSchema, form);
+    if (!success) {
+      setFieldErrors(Object.entries(errors).map(([field, message]) => ({ field, message })));
+      return;
+    }
+
     setLoading(true);
     try {
       await register({ name: form.fullName, email: form.email, password: form.password, confirmPassword: form.confirmPassword });
       navigate('/student-dashboard');
     } catch (err) {
-      const res = err.response?.data;
-      if (res?.errors) setFieldErrors(res.errors);
-      else setError(res?.message || 'Registration failed. Please try again.');
+      const { status, message, fieldErrors: fe } = getApiError(err, 'Registration failed. Please try again.');
+      if (Object.keys(fe).length) {
+        setFieldErrors(Object.entries(fe).map(([field, m]) => ({ field, message: m })));
+      } else {
+        setError(status ? `${message} (Error ${status})` : message);
+      }
     } finally { setLoading(false); }
   };
 

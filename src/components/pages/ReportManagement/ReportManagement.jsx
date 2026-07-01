@@ -1,8 +1,9 @@
 import React from 'react';
-import { BarChart3, Users, BookOpen, TrendingUp, DollarSign, GraduationCap } from 'lucide-react';
+import { BarChart3, Users, BookOpen, TrendingUp, Wallet, GraduationCap } from 'lucide-react';
 import { Card } from '@/components';
 import { PageHeader } from '@/components/molecules';
 import { useAdminStats } from '@/hooks';
+import { formatLKR } from '@/lib/currency';
 
 export function ReportManagement() {
   const { data: stats, isLoading } = useAdminStats();
@@ -12,7 +13,7 @@ export function ReportManagement() {
     { icon: GraduationCap, label: 'Total Lecturers', value: stats?.totalLecturers ?? '—', color: 'from-violet-500 to-violet-600' },
     { icon: BookOpen, label: 'Published Courses', value: stats?.publishedCourses ?? '—', color: 'from-primary to-primary-600' },
     { icon: TrendingUp, label: 'Total Enrollments', value: stats?.totalEnrollments ?? '—', color: 'from-emerald-500 to-emerald-600' },
-    { icon: DollarSign, label: 'Total Revenue', value: stats?.totalRevenue != null ? `$${Number(stats.totalRevenue).toLocaleString()}` : '—', color: 'from-amber-500 to-amber-600' },
+    { icon: Wallet, label: 'Total Revenue', value: stats?.totalRevenue != null ? formatLKR(stats.totalRevenue) : '—', color: 'from-amber-500 to-amber-600' },
   ];
 
   return (
@@ -49,7 +50,7 @@ export function ReportManagement() {
               </span> avg enrollments per student</p>
               <p>Revenue per course: <span className="font-semibold text-text-strong">
                 {stats?.publishedCourses && stats.totalRevenue
-                  ? `$${(stats.totalRevenue / stats.publishedCourses).toFixed(2)}` : '—'}
+                  ? formatLKR((stats.totalRevenue / stats.publishedCourses).toFixed(2)) : '—'}
               </span></p>
             </div>
           </div>

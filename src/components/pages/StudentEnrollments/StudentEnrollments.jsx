@@ -13,6 +13,10 @@ import { PageHeader } from '@/components/molecules';
 import { useStudents } from '@/hooks';
 import { useAdminEnrollStudent } from '@/hooks';
 import { useCourses } from '@/hooks';
+import { formatLKR } from '@/lib/currency';
+import { getApiError } from '@/lib/api/errorUtils';
+import { validateForm } from '@/lib/validation/validateForm';
+import { adminEnrollSchema } from '@/lib/validation/schemas';
 import { toast } from 'sonner';
 
 export function StudentEnrollments() {
@@ -44,17 +48,20 @@ export function StudentEnrollments() {
 
   const handleEnroll = async (e) => {
     e.preventDefault();
-    if (!form.studentId || !form.courseId) {
+    const { success } = validateForm(adminEnrollSchema, { studentId: form.studentId, courseId: form.courseId });
+    if (!success) {
       setFormError('Please select both a student and a course.');
       return;
     }
+    setFormError('');
     try {
       setIsSubmitting(true);
       await adminEnroll.mutateAsync({ courseId: form.courseId, studentId: form.studentId });
       toast.success('Student enrolled successfully.');
       setShowModal(false);
     } catch (err) {
-      setFormError(err?.response?.data?.message || 'Failed to enroll student.');
+      const { status, message } = getApiError(err, 'Failed to enroll student.');
+      setFormError(status ? `${message} (Error ${status})` : message);
     } finally {
       setIsSubmitting(false);
     }
@@ -163,7 +170,7 @@ export function StudentEnrollments() {
                   <option value="">— Select course —</option>
                   {courses.map((c) => (
                     <option key={c._id} value={c._id}>
-                      {c.title} {c.fee > 0 ? `($${c.fee})` : '(Free)'}
+                      {c.title} {c.fee > 0 ? `(${formatLKR(c.fee)})` : '(Free)'}
                     </option>
                   ))}
                 </select>

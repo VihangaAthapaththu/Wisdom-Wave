@@ -5,7 +5,9 @@ import {
   Route,
   Outlet,
 } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, QueryCache } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { getApiError } from "@/lib/api/errorUtils";
 import { AuthProvider } from "@/context";
 import { ProtectedRoute } from "@/components";
 import { ClientNavbar, ChatWidget } from "@/components";
@@ -45,8 +47,20 @@ import "./App.css";
 import { Toaster } from "sonner";
 import "sonner/dist/styles.css";
 
-// Instantiated outside App() to prevent recreation on every render
+// Instantiated outside App() to prevent recreation on every render.
+// A global QueryCache onError surfaces data-loading failures (with the real
+// backend message + HTTP status) as a toast, so users see what actually went
+// wrong. 401s are skipped because auth guards handle those; individual queries
+// can opt out via `meta: { skipGlobalErrorToast: true }`.
 const queryClient = new QueryClient({
+  queryCache: new QueryCache({
+    onError: (error, query) => {
+      if (query?.meta?.skipGlobalErrorToast) return;
+      const { status, message } = getApiError(error);
+      if (status === 401) return;
+      toast.error(status ? `${message} (Error ${status})` : message);
+    },
+  }),
   defaultOptions: {
     queries: {
       staleTime: 60 * 1000,
