@@ -18,6 +18,8 @@ import { useSocketManager } from "@/hooks";
 const LandingPage        = lazy(() => import("@/components/pages/LandingPage").then(m => ({ default: m.LandingPage })));
 const SignIn             = lazy(() => import("@/components/pages/SignIn").then(m => ({ default: m.SignIn })));
 const SignUp             = lazy(() => import("@/components/pages/SignUp").then(m => ({ default: m.SignUp })));
+const ForgotPassword     = lazy(() => import("@/components/pages/ForgotPassword").then(m => ({ default: m.ForgotPassword })));
+const ResetPassword      = lazy(() => import("@/components/pages/ResetPassword").then(m => ({ default: m.ResetPassword })));
 const Contact            = lazy(() => import("@/components/pages/Contact").then(m => ({ default: m.Contact })));
 const AdminDashboard     = lazy(() => import("@/components/pages/AdminDashboard").then(m => ({ default: m.AdminDashboard })));
 const StudentDashboard   = lazy(() => import("@/components/pages/StudentDashboard").then(m => ({ default: m.StudentDashboard })));
@@ -92,6 +94,8 @@ function App() {
               {/* Public routes */}
               <Route path="/signin" element={<SignIn />} />
               <Route path="/signup" element={<SignUp />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route element={<ClientLayout />}>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/contact" element={<Contact />} />

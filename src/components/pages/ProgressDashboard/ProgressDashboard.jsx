@@ -40,29 +40,43 @@ function SummaryCard({ label, value, color }) {
 
 function StreakWidget({ streak }) {
   if (!streak) return null;
+  const hasActivity =
+    (streak.longest ?? 0) > 0 || (streak.current ?? 0) > 0 || (streak.daysActiveThisWeek ?? 0) > 0;
   return (
     <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-5">
       <h3 className="text-sm font-bold text-gray-700 mb-4 flex items-center gap-1.5">
         <Flame size={15} className="text-orange-500" /> Learning Streaks
       </h3>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="text-center bg-orange-50 border border-orange-100 rounded-xl p-3">
-          <p className="text-2xl font-bold text-orange-600">{streak.current}</p>
-          <p className="text-xs text-orange-500 font-medium">Current Streak</p>
+      {hasActivity ? (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="text-center bg-orange-50 border border-orange-100 rounded-xl p-3">
+            <p className="text-2xl font-bold text-orange-600">{streak.current}</p>
+            <p className="text-xs text-orange-500 font-medium">Current Streak</p>
+          </div>
+          <div className="text-center bg-amber-50 border border-amber-100 rounded-xl p-3">
+            <p className="text-2xl font-bold text-amber-600">{streak.longest}</p>
+            <p className="text-xs text-amber-500 font-medium">Longest Streak</p>
+          </div>
+          <div className="text-center bg-blue-50 border border-blue-100 rounded-xl p-3">
+            <p className="text-2xl font-bold text-blue-600">{streak.daysActiveThisWeek}</p>
+            <p className="text-xs text-blue-500 font-medium">Days This Week</p>
+          </div>
+          <div className="text-center bg-violet-50 border border-violet-100 rounded-xl p-3">
+            <p className="text-2xl font-bold text-violet-600">{streak.consistencyScore}%</p>
+            <p className="text-xs text-violet-500 font-medium">Consistency</p>
+          </div>
         </div>
-        <div className="text-center bg-amber-50 border border-amber-100 rounded-xl p-3">
-          <p className="text-2xl font-bold text-amber-600">{streak.longest}</p>
-          <p className="text-xs text-amber-500 font-medium">Longest Streak</p>
+      ) : (
+        <div className="flex flex-col items-center text-center py-5">
+          <div className="w-12 h-12 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center mb-3">
+            <Flame size={22} className="text-orange-400" />
+          </div>
+          <p className="text-sm font-bold text-gray-800">Start your learning streak!</p>
+          <p className="text-xs text-gray-500 mt-1 max-w-[280px]">
+            Complete a lesson to earn your first active day and start building a streak.
+          </p>
         </div>
-        <div className="text-center bg-blue-50 border border-blue-100 rounded-xl p-3">
-          <p className="text-2xl font-bold text-blue-600">{streak.daysActiveThisWeek}</p>
-          <p className="text-xs text-blue-500 font-medium">Days This Week</p>
-        </div>
-        <div className="text-center bg-violet-50 border border-violet-100 rounded-xl p-3">
-          <p className="text-2xl font-bold text-violet-600">{streak.consistencyScore}%</p>
-          <p className="text-xs text-violet-500 font-medium">Consistency</p>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

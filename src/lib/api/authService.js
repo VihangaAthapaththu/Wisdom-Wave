@@ -35,6 +35,26 @@ export const authService = {
   },
 
   /**
+   * Request a password reset link for the given email.
+   * @param {string} email
+   * @returns {Promise<Object>}
+   */
+  async forgotPassword(email) {
+    const response = await api.post("/auth/forgot-password", { email });
+    return response.data;
+  },
+
+  /**
+   * Reset a password using a token from the emailed link.
+   * @param {Object} data - { token, password, confirmPassword }
+   * @returns {Promise<Object>}
+   */
+  async resetPassword(data) {
+    const response = await api.post("/auth/reset-password", data);
+    return response.data;
+  },
+
+  /**
    * Get the current authenticated user's profile.
    * @returns {Promise<Object>} User data
    */

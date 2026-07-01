@@ -1,35 +1,21 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Clock, Users, Code2, Smartphone, Network, BookOpen, Compass, Award, GraduationCap, ArrowRight, Play, ChevronRight } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Clock, Users, Code2, Smartphone, Network, BookOpen, Compass, Award, GraduationCap, ArrowRight, Play, ChevronRight, Loader2 } from 'lucide-react';
 import { Button, Card } from '@/components';
+import { useCourses } from '@/hooks';
+import { formatLKR } from '@/lib/currency';
+
+// Rotating icons for featured course cards (visual only)
+const FEATURED_ICONS = [Code2, Smartphone, Network, BookOpen];
 
 export function LandingPage() {
-  const courses = [
-    {
-      id: 1,
-      title: 'Introduction to Python',
-      duration: '4 weeks',
-      students: '1.2K students',
-      level: 'Beginner',
-      icon: Code2,
-    },
-    {
-      id: 2,
-      title: 'React Native',
-      duration: '6 weeks',
-      students: '2.5K students',
-      level: 'Intermediate',
-      icon: Smartphone,
-    },
-    {
-      id: 3,
-      title: 'Networking with Java',
-      duration: '8 weeks',
-      students: '3.1K students',
-      level: 'Advanced',
-      icon: Network,
-    },
-  ];
+  const navigate = useNavigate();
+  const { data: publishedCourses = [], isLoading: coursesLoading } = useCourses(
+    false,
+    undefined,
+    { published: true }
+  );
+  const featuredCourses = (publishedCourses || []).slice(0, 3);
 
   const whyItems = [
     { icon: BookOpen, title: 'Best Quality Contents', desc: 'Progressive levels from beginner to expert with hands-on tutorials and real projects.' },
@@ -122,35 +108,51 @@ export function LandingPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-            {courses.map((course) => {
-              const IconComp = course.icon;
-              return (
-                <Card key={course.id} className="group bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-[rgba(255,165,0,0.05)] transition-all duration-300 hover:-translate-y-1.5 relative overflow-hidden">
-                  <div className="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">
-                    {course.level}
-                  </div>
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/15 to-primary-600/10 flex items-center justify-center mb-5 group-hover:from-primary/25 group-hover:to-primary-600/15 transition-colors duration-300">
-                    <IconComp size={26} className="text-primary" />
-                  </div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-4">{course.title}</h3>
-                  <div className="flex items-center gap-4 mb-6 pb-5 border-b border-gray-100 text-sm text-gray-500">
-                    <div className="flex items-center gap-1.5">
-                      <Clock size={14} className="text-primary" />
-                      <span>{course.duration}</span>
+          {coursesLoading ? (
+            <div className="flex items-center justify-center py-16 text-gray-400">
+              <Loader2 size={28} className="animate-spin text-primary" />
+            </div>
+          ) : featuredCourses.length === 0 ? (
+            <div className="text-center py-14 text-gray-400">
+              <BookOpen size={36} className="mx-auto mb-3 opacity-30" />
+              <p className="text-sm font-medium">New courses are coming soon.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+              {featuredCourses.map((course, i) => {
+                const IconComp = FEATURED_ICONS[i % FEATURED_ICONS.length];
+                const courseId = course._id || course.id;
+                const isFree = !course.fee || course.fee <= 0;
+                return (
+                  <Card key={courseId} className="group bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-[rgba(255,165,0,0.05)] transition-all duration-300 hover:-translate-y-1.5 relative overflow-hidden">
+                    <div className="absolute top-4 right-4 bg-primary text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">
+                      {isFree ? 'Free' : formatLKR(course.fee)}
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <Users size={14} className="text-primary" />
-                      <span>{course.students}</span>
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/15 to-primary-600/10 flex items-center justify-center mb-5 group-hover:from-primary/25 group-hover:to-primary-600/15 transition-colors duration-300">
+                      <IconComp size={26} className="text-primary" />
                     </div>
-                  </div>
-                  <Button className="w-full bg-gradient-to-r from-primary to-primary-600 hover:from-primary-600 hover:to-primary text-white py-2.5 rounded-xl font-semibold text-sm shadow-md shadow-[rgba(255,165,0,0.15)] hover:shadow-lg hover:shadow-[rgba(255,165,0,0.25)] transition-all duration-300 h-auto active:scale-[0.97]">
-                    Enroll Now
-                  </Button>
-                </Card>
-              );
-            })}
-          </div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-4 line-clamp-2">{course.title}</h3>
+                    <div className="flex items-center gap-4 mb-6 pb-5 border-b border-gray-100 text-sm text-gray-500">
+                      <div className="flex items-center gap-1.5">
+                        <Clock size={14} className="text-primary" />
+                        <span>{course.duration != null ? `${course.duration}h` : 'Self-paced'}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Users size={14} className="text-primary" />
+                        <span>{course.enrollmentCount ?? 0} enrolled</span>
+                      </div>
+                    </div>
+                    <Button
+                      onClick={() => navigate(`/courses/${courseId}`)}
+                      className="w-full bg-gradient-to-r from-primary to-primary-600 hover:from-primary-600 hover:to-primary text-white py-2.5 rounded-xl font-semibold text-sm shadow-md shadow-[rgba(255,165,0,0.15)] hover:shadow-lg hover:shadow-[rgba(255,165,0,0.25)] transition-all duration-300 h-auto active:scale-[0.97]"
+                    >
+                      View Course
+                    </Button>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
 
           <div className="text-center mt-10">
             <Link to="/courses" className="inline-flex items-center gap-1.5 text-primary hover:text-primary-700 text-base font-semibold transition-colors group">

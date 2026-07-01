@@ -177,12 +177,16 @@ export function SignIn() {
             </p>
           </div>
 
-          {/* Stats */}
+          {/* Value props */}
           <div className="relative z-10 flex gap-7 pt-8 border-t border-white/25">
-            {[['12K+','Learners'],['200+','Courses'],['98%','Completion']].map(([n,l]) => (
-              <div key={l}>
-                <div className="jakarta font-extrabold text-[22px] leading-none">{n}</div>
-                <div className="text-white/70 text-[11px] mt-1">{l}</div>
+            {[
+              ['Self-paced', 'Learn anytime'],
+              ['Expert-led', 'Real lecturers'],
+              ['Track progress', 'Stay on streak'],
+            ].map(([title, sub]) => (
+              <div key={title}>
+                <div className="jakarta font-extrabold text-[15px] leading-tight">{title}</div>
+                <div className="text-white/70 text-[11px] mt-1">{sub}</div>
               </div>
             ))}
           </div>
@@ -237,7 +241,7 @@ export function SignIn() {
               <div className="anim-rise" style={{ animationDelay: '0.14s' }}>
                 <div className="flex items-center justify-between mb-1.5">
                   <label htmlFor="si-pw" className="text-[13px] font-semibold text-gray-700">Password</label>
-                  <a href="#forgot" className="text-[12.5px] font-semibold text-primary hover:underline">Forgot password?</a>
+                  <Link to="/forgot-password" className="text-[12.5px] font-semibold text-primary hover:underline">Forgot password?</Link>
                 </div>
                 <div className="relative">
                   <input

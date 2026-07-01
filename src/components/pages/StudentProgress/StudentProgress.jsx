@@ -181,6 +181,13 @@ export function StudentProgress() {
   const weeklyData = insights.weeklyActivityData || [];
   const maxCompletions = Math.max(...weeklyData.map((d) => d.completions), 1);
 
+  // A student only has a streak once they've completed at least one lesson.
+  // longest > 0 means there has been at least one completion ever.
+  const hasStreakActivity =
+    (streak.longest ?? 0) > 0 ||
+    (streak.current ?? 0) > 0 ||
+    (streak.daysActiveThisWeek ?? 0) > 0;
+
   const noProgress = !courses.length;
 
   return (
@@ -259,30 +266,51 @@ export function StudentProgress() {
                 <h2 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
                   <Flame size={16} className="text-orange-500" /> Learning Streak
                 </h2>
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  <div className="bg-orange-50 rounded-xl p-3 text-center border border-orange-100">
-                    <p className="text-2xl font-bold text-orange-600">{streak.current ?? 0}</p>
-                    <p className="text-xs text-orange-500 font-medium mt-0.5">Current Streak</p>
-                    <p className="text-[10px] text-orange-300">days</p>
+                {hasStreakActivity ? (
+                  <>
+                    <div className="grid grid-cols-2 gap-3 mb-4">
+                      <div className="bg-orange-50 rounded-xl p-3 text-center border border-orange-100">
+                        <p className="text-2xl font-bold text-orange-600">{streak.current ?? 0}</p>
+                        <p className="text-xs text-orange-500 font-medium mt-0.5">Current Streak</p>
+                        <p className="text-[10px] text-orange-300">days</p>
+                      </div>
+                      <div className="bg-amber-50 rounded-xl p-3 text-center border border-amber-100">
+                        <p className="text-2xl font-bold text-amber-600">{streak.longest ?? 0}</p>
+                        <p className="text-xs text-amber-500 font-medium mt-0.5">Best Streak</p>
+                        <p className="text-[10px] text-amber-300">days</p>
+                      </div>
+                      <div className="bg-blue-50 rounded-xl p-3 text-center border border-blue-100">
+                        <p className="text-2xl font-bold text-blue-600">{streak.daysActiveThisWeek ?? 0}</p>
+                        <p className="text-xs text-blue-500 font-medium mt-0.5">This Week</p>
+                        <p className="text-[10px] text-blue-300">active days</p>
+                      </div>
+                      <div className="bg-purple-50 rounded-xl p-3 text-center border border-purple-100">
+                        <p className="text-2xl font-bold text-purple-600">{streak.consistencyScore ?? 0}%</p>
+                        <p className="text-xs text-purple-500 font-medium mt-0.5">This Month</p>
+                        <p className="text-[10px] text-purple-300">consistency</p>
+                      </div>
+                    </div>
+                    {/* Mini 7-day bar */}
+                    {weeklyData.length > 0 && <StreakWeek weeklyData={weeklyData} />}
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center text-center py-6 px-2">
+                    <div className="w-14 h-14 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center mb-3">
+                      <Flame size={26} className="text-orange-400" />
+                    </div>
+                    <p className="text-sm font-bold text-gray-800">Start your learning streak!</p>
+                    <p className="text-xs text-gray-500 mt-1.5 leading-relaxed max-w-[240px]">
+                      Complete a lesson today to earn your first active day. Keep learning daily to
+                      build a streak and watch your consistency grow.
+                    </p>
+                    <Link
+                      to="/student-dashboard"
+                      className="mt-4 inline-flex items-center gap-1.5 bg-gradient-to-r from-primary to-primary-600 text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-sm hover:shadow-md transition-all"
+                    >
+                      <BookOpen size={14} /> Go to my courses
+                    </Link>
                   </div>
-                  <div className="bg-amber-50 rounded-xl p-3 text-center border border-amber-100">
-                    <p className="text-2xl font-bold text-amber-600">{streak.longest ?? 0}</p>
-                    <p className="text-xs text-amber-500 font-medium mt-0.5">Best Streak</p>
-                    <p className="text-[10px] text-amber-300">days</p>
-                  </div>
-                  <div className="bg-blue-50 rounded-xl p-3 text-center border border-blue-100">
-                    <p className="text-2xl font-bold text-blue-600">{streak.daysActiveThisWeek ?? 0}</p>
-                    <p className="text-xs text-blue-500 font-medium mt-0.5">This Week</p>
-                    <p className="text-[10px] text-blue-300">active days</p>
-                  </div>
-                  <div className="bg-purple-50 rounded-xl p-3 text-center border border-purple-100">
-                    <p className="text-2xl font-bold text-purple-600">{streak.consistencyScore ?? 0}%</p>
-                    <p className="text-xs text-purple-500 font-medium mt-0.5">This Month</p>
-                    <p className="text-[10px] text-purple-300">consistency</p>
-                  </div>
-                </div>
-                {/* Mini 7-day bar */}
-                {weeklyData.length > 0 && <StreakWeek weeklyData={weeklyData} />}
+                )}
               </div>
 
               {/* Weekly Activity Chart */}
@@ -291,8 +319,8 @@ export function StudentProgress() {
                   <TrendingUp size={16} className="text-primary" /> This Week's Activity
                 </h2>
                 {weeklyData.every((d) => d.completions === 0) ? (
-                  <div className="h-40 flex items-center justify-center text-gray-300 text-sm">
-                    No completions this week yet
+                  <div className="h-40 flex items-center justify-center text-center text-gray-400 text-sm px-4">
+                    Complete a lesson to see your weekly activity here.
                   </div>
                 ) : (
                   <ResponsiveContainer width="100%" height={160}>

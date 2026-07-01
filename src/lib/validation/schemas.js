@@ -38,6 +38,24 @@ export const signUpSchema = z
     message: "Passwords do not match",
   });
 
+export const forgotPasswordSchema = z.object({
+  email,
+});
+
+export const resetPasswordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/[A-Z]/, "Include at least one uppercase letter")
+      .regex(/[0-9]/, "Include at least one number"),
+    confirmPassword: z.string().min(1, "Please confirm your password"),
+  })
+  .refine((d) => d.password === d.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Passwords do not match",
+  });
+
 // ── Contact ──────────────────────────────────────────────────────────────────
 export const contactSchema = z.object({
   name: z.string().trim().min(2, "Please enter your name").max(100, "Name is too long"),
